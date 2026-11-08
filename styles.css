@@ -1,29 +1,34 @@
-/* «Your work»: a plain first look until the art direction's design, with the theme's own variables. */
+/* «Your work»: a plain look until the art direction's design, with the theme's own variables. One panel: «To sort out»
+   above, «Your services» below, the doors in a grid that fits however many there are. */
 .tembiapo {
     display: grid;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 .tembiapo-label {
     margin: 0 0 .5rem;
-    font-size: .875rem;
+    font-size: .8125rem;
     font-weight: 700;
     letter-spacing: .04em;
     text-transform: uppercase;
 }
 .tembiapo-alert-list,
 .tembiapo-doors {
-    display: grid;
-    gap: .5rem;
     margin: 0;
     padding: 0;
     list-style: none;
 }
+.tembiapo-alert-list {
+    display: grid;
+    gap: .4rem;
+}
+
+/* To sort out: one list, every service mixed. */
 .tembiapo-alert a {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: .25rem .75rem;
-    padding: .6rem .85rem;
+    padding: .55rem .85rem;
     border-left: .3rem solid var(--bs-warning, #f0ad4e);
     border-radius: var(--bs-border-radius, .375rem);
     background: var(--bs-tertiary-bg, #f8f9fa);
@@ -34,6 +39,7 @@
     border-left-color: var(--bs-danger, #ca3120);
 }
 .tembiapo-badge {
+    flex: none;
     font-size: .75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -46,19 +52,53 @@
     font-weight: 600;
 }
 .tembiapo-alert-service {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: .35rem;
     color: var(--bs-secondary-color, #6a737b);
+    font-size: .8125rem;
 }
+.tembiapo-alert-service img {
+    width: 1rem;
+    height: 1rem;
+}
+.tembiapo-more summary {
+    margin-top: .5rem;
+    color: var(--bs-link-color, #0f6cbf);
+    font-weight: 600;
+    cursor: pointer;
+}
+.tembiapo-more .tembiapo-alert-list {
+    margin-top: .4rem;
+}
+
+/* Your services: every door the same size, in a fixed order. */
 .tembiapo-doors {
-    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: .75rem;
+}
+.tembiapo.cols-1 .tembiapo-doors {
+    grid-template-columns: minmax(0, 1fr);
+}
+.tembiapo.cols-2 .tembiapo-doors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.tembiapo.cols-3 .tembiapo-doors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .tembiapo-door {
     display: grid;
+    align-content: start;
     gap: .5rem;
     padding: .85rem;
     border: 1px solid var(--bs-border-color, #dee2e6);
     border-radius: var(--bs-border-radius-lg, .5rem);
     background: var(--bs-body-bg, #fff);
+}
+.tembiapo-door.is-urgent {
+    border-color: var(--bs-danger, #ca3120);
 }
 .tembiapo-door-main {
     display: flex;
@@ -71,10 +111,8 @@
     display: grid;
     flex: none;
     place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: .75rem;
-    background: var(--bs-secondary-bg, #e9ecef);
+    width: 2.5rem;
+    height: 2.5rem;
     font-weight: 700;
 }
 .tembiapo-door-icon img {
@@ -87,23 +125,110 @@
     min-width: 0;
 }
 .tembiapo-door-title {
-    font-size: 1.125rem;
+    font-size: 1.0625rem;
     font-weight: 700;
 }
 .tembiapo-door-status {
     color: var(--bs-secondary-color, #6a737b);
     font-size: .875rem;
 }
-.tembiapo-door-go {
+.tembiapo-count {
+    display: grid;
     flex: none;
-    color: var(--bs-link-color, #0f6cbf);
-    font-weight: 600;
+    place-items: center;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    padding: 0 .4rem;
+    border-radius: 1rem;
+    background: var(--bs-warning, #f0ad4e);
+    color: #1d2125;
+    font-size: .8125rem;
+    font-weight: 700;
+}
+.tembiapo-door.is-urgent .tembiapo-count {
+    background: var(--bs-danger, #ca3120);
+    color: #fff;
 }
 .tembiapo-door-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: .5rem;
+    gap: .25rem 1rem;
+    padding-left: 3.25rem;
+    font-size: .875rem;
 }
+
+/* The theme may underline every link (dark mode does): here the whole line or door is the link. */
+.tembiapo .tembiapo-alert a,
+.tembiapo .tembiapo-door a {
+    text-decoration: none;
+}
+
+@media (hover: hover) {
+    .tembiapo .tembiapo-alert a:hover .tembiapo-alert-text,
+    .tembiapo .tembiapo-door-main:hover .tembiapo-door-title,
+    .tembiapo .tembiapo-door-actions a:hover {
+        text-decoration: underline;
+    }
+}
+
+/* One service: one wide door, its shortcuts beside it. */
+.tembiapo.is-one .tembiapo-door {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.tembiapo.is-one .tembiapo-door-main {
+    flex: 1 1 18rem;
+}
+.tembiapo.is-one .tembiapo-door-actions {
+    padding-left: 0;
+}
+
+/* Many services: smaller doors, the state on one line. */
+.tembiapo.is-compact .tembiapo-door {
+    gap: .35rem;
+    padding: .6rem .7rem;
+}
+.tembiapo.is-compact .tembiapo-door-icon,
+.tembiapo.is-compact .tembiapo-door-icon img {
+    width: 2rem;
+    height: 2rem;
+}
+.tembiapo.is-compact .tembiapo-door-title {
+    font-size: 1rem;
+}
+.tembiapo.is-compact .tembiapo-door-status {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tembiapo.is-compact .tembiapo-door-actions {
+    padding-left: 2.75rem;
+}
+
+/* Narrower: four become two, then one (two when compact). */
+@media (max-width: 991.98px) {
+    .tembiapo.cols-3 .tembiapo-doors,
+    .tembiapo.cols-4 .tembiapo-doors {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .tembiapo.cols-2 .tembiapo-doors,
+    .tembiapo.cols-3 .tembiapo-doors,
+    .tembiapo.cols-4 .tembiapo-doors {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .tembiapo.is-compact.cols-4 .tembiapo-doors {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .tembiapo-door-actions {
+        padding-left: 0;
+    }
+}
+
 /* At the top and across the whole width, also on a dashboard whose theme lays its blocks out in a grid of columns. */
 #page-my-index #block-region-content > .block.block_oksigeniatembiapo {
     grid-column: 1 / -1;

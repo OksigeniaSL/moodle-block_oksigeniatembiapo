@@ -18,10 +18,12 @@ namespace block_oksigeniatembiapo;
 
 use block_oksigeniatembiapo\local\board;
 use block_oksigeniatembiapo\local\placement;
+use block_oksigeniatembiapo\local\services;
 
 /**
- * «Your work»: the doors and alerts of every plugin together, the urgent first, what does not fit left out; and the block
- * at the top of every dashboard, once. Example data.
+ * «Your work»: one panel for any number of services, the alerts of all of them together, a fixed order, what does not fit
+ * left out; the settings that fill themselves; and the block at the top of every dashboard, once. Pretend services and
+ * example data.
  *
  * @package    block_oksigeniatembiapo
  * @category   test
@@ -29,44 +31,121 @@ use block_oksigeniatembiapo\local\placement;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \block_oksigeniatembiapo\local\board
  * @covers     \block_oksigeniatembiapo\local\placement
+ * @covers     \block_oksigeniatembiapo\local\services
  */
 #[\PHPUnit\Framework\Attributes\CoversClass(board::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(placement::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(services::class)]
 final class board_test extends \advanced_testcase {
     /**
-     * The alerts of all the services together, the urgent first; the doors by name; what does not fit, out.
+     * Pretend services: n plugins with one door each, the first two with alerts.
+     *
+     * @param int $n
+     * @return array component => doors
      */
-    public function test_build(): void {
+    protected function pretend(int $n): array {
+        $raw = [];
+        for ($i = 1; $i <= $n; $i++) {
+            $component = 'local_pretend' . chr(96 + $i);
+            $door = ['key' => $component, 'title' => 'Servicio ' . chr(64 + $i), 'url' => 'https://school.example/' . $i,
+                'status' => $i . ' cosas', 'unknown' => ['ignored' => true]];
+            if ($i <= 2) {
+                $door['alerts'] = [['text' => 'Aviso de ' . $i, 'level' => $i === 1 ? 'today' : 'urgent']];
+            }
+            $raw[$component] = [$door];
+        }
+        return $raw;
+    }
+
+    /**
+     * Any number of services: nothing, one wide door, a row, rows of four, compact.
+     */
+    public function test_any_number(): void {
+        $expected = [0 => ['one', 1], 1 => ['one', 1], 2 => ['row', 2], 4 => ['row', 4], 7 => ['grid', 4],
+            10 => ['compact', 4]];
+        foreach ($expected as $n => [$layout, $cols]) {
+            $board = board::build($this->pretend($n));
+            $this->assertSame($n, $board['count'], "$n services");
+            $this->assertSame($n > 0, $board['hasdoors']);
+            $this->assertSame($layout, $board['layout'], "$n services");
+            $this->assertSame($cols, $board['cols'], "$n services");
+            $this->assertSame(min($n, 2), count($board['alerts']), "$n services");
+        }
+        // The alerts are told in the doors only as a number.
+        $board = board::build($this->pretend(2));
+        $this->assertSame([1, 1], array_column($board['doors'], 'alertcount'));
+        $this->assertSame([false, true], array_column($board['doors'], 'urgent'));
+        $this->assertArrayNotHasKey('alerts', $board['doors'][0]);
+    }
+
+    /**
+     * To sort out: the urgent first, then by when they are due, then by the order of the doors; five in sight.
+     */
+    public function test_to_sort_out(): void {
         $board = board::build([
-            'local_canteen' => [[
-                'key' => 'canteen', 'title' => 'Comedor', 'url' => 'https://school.example/canteen',
-                'status' => '312 menús hoy',
-                'alerts' => [['text' => '3 libros vencen hoy', 'url' => 'https://school.example/a', 'level' => 'today'],
-                    ['text' => 'Nivel inventado', 'level' => 'whenever']],
-                'actions' => [
-                    ['label' => 'Uno', 'url' => 'https://school.example/1'],
-                    ['text' => 'Dos', 'url' => 'https://school.example/2'],
-                    ['label' => 'Tres', 'url' => 'https://school.example/3'],
-                ],
-            ]],
-            'local_screens' => [[
-                'key' => 'screens', 'title' => 'Bandeja <b>de entrada</b>', 'url' => 'https://school.example/screens',
-                'alerts' => [['text' => 'Una pantalla sin señal', 'level' => 'urgent']],
-            ], ['title' => 'Sin dirección'], 'not a door'],
+            'local_b' => [['title' => 'Biblioteca', 'url' => 'https://school.example/b', 'alerts' => [
+                ['text' => 'Hoy sin plazo', 'level' => 'today'],
+                ['text' => 'Urgente sin plazo', 'level' => 'urgent'],
+                ['text' => 'Nivel inventado', 'level' => 'whenever'],
+            ]]],
+            'local_a' => [['title' => 'Admisiones', 'url' => 'https://school.example/a', 'alerts' => [
+                ['text' => 'Urgente a las 12', 'level' => 'urgent', 'due' => 1200],
+                ['text' => 'Urgente a las 10', 'level' => 'urgent', 'due' => 1000, 'url' => 'https://school.example/x'],
+                ['text' => 'Hoy a las 9', 'level' => 'today', 'due' => 900],
+                ['text' => 'Hoy sin plazo, A', 'level' => 'today'],
+            ]]],
         ]);
-        $this->assertTrue($board['hasdoors']);
-        $this->assertSame(['Bandeja de entrada', 'Comedor'], array_column($board['doors'], 'title'));
-        $this->assertSame(['urgent', 'today'], array_column($board['alerts'], 'level'));
-        // An alert without its own address goes to the door.
-        $this->assertSame('https://school.example/screens', $board['alerts'][0]['url']);
-        $this->assertSame('Bandeja de entrada', $board['alerts'][0]['service']);
-        $this->assertTrue($board['alerts'][0]['urgent']);
-        // Two shortcuts at most, «text» taken as «label».
-        $this->assertSame(['Uno', 'Dos'], array_column($board['doors'][1]['actions'], 'label'));
-        $empty = board::build(['local_x' => []]);
-        $this->assertFalse($empty['hasdoors']);
-        $this->assertFalse($empty['hasalerts']);
-        $this->assertSame(0, $empty['count']);
+        $this->assertSame(['Urgente a las 10', 'Urgente a las 12', 'Urgente sin plazo', 'Hoy a las 9', 'Hoy sin plazo, A',
+            'Hoy sin plazo'], array_column($board['alerts'], 'text'));
+        $this->assertSame('https://school.example/x', $board['alerts'][0]['url']);
+        $this->assertSame('https://school.example/b', $board['alerts'][2]['url']);
+        $this->assertSame('Biblioteca', $board['alerts'][2]['service']);
+        $this->assertCount(5, $board['shown']);
+        $this->assertTrue($board['hasmore']);
+        $this->assertSame(1, $board['morecount']);
+        $this->assertSame(get_string('more', 'block_oksigeniatembiapo', 1), $board['morelabel']);
+    }
+
+    /**
+     * A fixed order: the site's first, then by name; never the order they came in. What does not fit is left out.
+     */
+    public function test_order_and_tolerance(): void {
+        $raw = [
+            'local_z' => [['title' => 'Zeta', 'url' => 'https://school.example/z'], ['title' => 'Sin dirección'], 'not a door'],
+            'local_m' => [['title' => '<b>Menú</b>', 'url' => 'https://school.example/m', 'actions' => [
+                ['label' => 'Uno', 'url' => 'https://school.example/1'],
+                ['text' => 'Dos', 'url' => 'https://school.example/2'],
+                ['label' => 'Tres', 'url' => 'https://school.example/3'],
+            ]]],
+            'local_a' => [['title' => 'Avisos', 'url' => 'https://school.example/a']],
+            'local_x' => 'nothing',
+        ];
+        $this->assertSame(['Avisos', 'Menú', 'Zeta'], array_column(board::build($raw)['doors'], 'title'));
+        $this->assertSame(['Zeta', 'Avisos', 'Menú'], array_column(board::build($raw, ['local_z'])['doors'], 'title'));
+        $menu = board::build($raw)['doors'][1];
+        $this->assertSame(['Uno', 'Dos'], array_column($menu['actions'], 'label'));
+        // The logo, from what the block was given.
+        $board = board::build($raw, [], function ($component) {
+            return 'https://school.example/' . $component . '.svg';
+        });
+        $this->assertSame('https://school.example/local_a.svg', $board['doors'][0]['icon']);
+    }
+
+    /**
+     * The settings: the services hidden by the site do not take part; a plugin's logo is its own icon, or the block's.
+     */
+    public function test_settings_and_logo(): void {
+        $this->resetAfterTest();
+        services::save(['local_b', 'local_a'], ['local_c']);
+        $this->assertSame(['order' => ['local_b', 'local_a'], 'hidden' => ['local_c']], services::settings());
+        set_config('services', '{"order": ["Not a component", "local_a"], "hidden": 3}', 'block_oksigeniatembiapo');
+        $this->assertSame(['order' => ['local_a'], 'hidden' => []], services::settings());
+        // A block without services of its own: the list of the site is whatever takes part, each with its name.
+        foreach (services::listed() as $service) {
+            $this->assertNotSame('', $service['name']);
+        }
+        $this->assertStringContainsString('generic', board::icon('local_nothingthatexists'));
+        $this->assertStringContainsString('qtype_truefalse/1/icon', board::icon('qtype_truefalse'));
     }
 
     /**
@@ -83,7 +162,6 @@ final class board_test extends \advanced_testcase {
             'defaultregion' => 'content']));
         $user = $this->getDataGenerator()->create_user();
         $own = my_copy_page((int) $user->id, MY_PAGE_PRIVATE);
-        // A copy made now already has it, from the default.
         $this->assertSame(0, placement::everywhere());
         $DB->delete_records('block_instances', ['blockname' => 'oksigeniatembiapo',
             'parentcontextid' => \context_user::instance($user->id)->id]);
@@ -91,18 +169,5 @@ final class board_test extends \advanced_testcase {
         $this->assertTrue($DB->record_exists('block_instances', ['blockname' => 'oksigeniatembiapo',
             'parentcontextid' => \context_user::instance($user->id)->id, 'subpagepattern' => (string) $own->id]));
         $this->assertSame(0, placement::everywhere());
-    }
-
-    /**
-     * Without any plugin that takes part, nothing.
-     */
-    public function test_nobody(): void {
-        $this->resetAfterTest();
-        $user = $this->getDataGenerator()->create_user();
-        $board = board::collect((int) $user->id);
-        $this->assertSame([], $board['alerts']);
-        foreach ($board['doors'] as $door) {
-            $this->assertNotSame('', $door['title']);
-        }
     }
 }

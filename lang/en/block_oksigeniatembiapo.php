@@ -25,14 +25,23 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['alerts'] = 'To sort out';
+$string['count'] = '{$a} to sort out';
 $string['doors'] = 'Your services';
 $string['go'] = 'Go in';
 $string['hidemycourses'] = 'Hide «My courses» from whoever has no course';
 $string['hidemycourses_desc'] = 'Whoever runs a service without teaching (the canteen, the office, the library) would find an empty page there. It comes back as soon as they are enrolled in a course.';
 $string['level_today'] = 'Today';
 $string['level_urgent'] = 'Urgent';
+$string['more'] = 'and {$a} more';
 $string['oksigeniatembiapo:addinstance'] = 'Add the «Your work» block';
 $string['oksigeniatembiapo:myaddinstance'] = 'Add the «Your work» block to the dashboard';
 $string['pluginname'] = 'Your work (Oksigenia Tembiapo)';
 $string['privacy:metadata'] = 'The «Your work» block stores no personal data: it shows what other plugins say about the services each person runs.';
+$string['services'] = 'The services';
+$string['services_desc'] = 'The services that take part in «Your work», in the order their doors appear. The list fills itself with what is installed: one that arrives later goes at the end. A hidden service stays installed, but its door and its alerts do not show.';
+$string['services_hide'] = 'Hide';
+$string['services_name'] = 'Service';
+$string['services_none'] = 'No service of this site takes part in «Your work» yet.';
+$string['services_place'] = 'Place of {$a}';
+$string['services_position'] = 'Place';
 $string['title'] = 'Your work';

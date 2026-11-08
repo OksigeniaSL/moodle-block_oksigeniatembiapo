@@ -17,41 +17,52 @@
 {{!
     @template block_oksigeniatembiapo/board
 
-    «Your work»: what is waiting to be sorted out across every service, the urgent first, each straight to where it is
-    sorted out; and below, a door into each service. A plain first look until the art direction's design.
+    «Your work»: one panel for every service the person runs. Above, «To sort out»: the alerts of all of them in one list,
+    the urgent first, five in sight and the rest behind «and N more». Below, «Your services»: a door into each, all the same
+    size, in a fixed order: one wide door, a row of up to four, rows of four, or compact when there are many. A plain look
+    until the art direction's design.
 
     Example context (json):
     {
-        "hasalerts": true,
-        "alerts": [{"text": "«Comedor» has given no sign of life since 9:12", "url": "#", "level": "urgent", "urgent": true,
-            "levellabel": "Urgent", "service": "Screens"}],
-        "hasdoors": true, "count": 1,
+        "hasalerts": true, "hasmore": false, "morecount": 0, "morelabel": "", "more": [],
+        "shown": [{"text": "«Comedor» has given no sign of life since 9:12", "url": "#", "level": "urgent", "urgent": true,
+            "levellabel": "Urgent", "service": "Screens", "serviceicon": ""}],
+        "hasdoors": true, "count": 1, "cols": 1, "layout": "one",
         "doors": [{"key": "local_oksigeniahechauka", "id": "tembiapo-screens", "title": "Screens", "url": "#",
-            "status": "4 screens · 1 without a sign of life", "icon": "", "initial": "S", "hasactions": true,
-            "actions": [{"label": "Publish", "url": "#"}]}]
+            "status": "4 screens · 1 without a sign of life", "icon": "", "initial": "S", "alertcount": 1, "hasalerts": true,
+            "urgent": true, "hasactions": true, "actions": [{"label": "Publish", "url": "#"}]}]
     }
 }}
-<div class="tembiapo">
+<div class="tembiapo is-{{layout}} cols-{{cols}}">
     {{#hasalerts}}
-    <section class="tembiapo-alerts" aria-labelledby="tembiapo-alerts-{{uniqid}}">
+    <section class="tembiapo-zone tembiapo-alerts" aria-labelledby="tembiapo-alerts-{{uniqid}}">
         <h3 class="tembiapo-label" id="tembiapo-alerts-{{uniqid}}">{{#str}}alerts, block_oksigeniatembiapo{{/str}}</h3>
         <ul class="tembiapo-alert-list">
-            {{#alerts}}
-            <li class="tembiapo-alert is-{{level}}"><a href="{{url}}"><span class="tembiapo-badge">{{levellabel}}</span><span class="tembiapo-alert-text">{{text}}</span><small class="tembiapo-alert-service">{{service}}</small></a></li>
-            {{/alerts}}
+            {{#shown}}{{> block_oksigeniatembiapo/alert }}{{/shown}}
         </ul>
+        {{#hasmore}}
+        <details class="tembiapo-more">
+            <summary>{{morelabel}}</summary>
+            <ul class="tembiapo-alert-list">
+                {{#more}}{{> block_oksigeniatembiapo/alert }}{{/more}}
+            </ul>
+        </details>
+        {{/hasmore}}
     </section>
     {{/hasalerts}}
-    <ul class="tembiapo-doors" aria-label="{{#cleanstr}}doors, block_oksigeniatembiapo{{/cleanstr}}">
-        {{#doors}}
-        <li class="tembiapo-door" id="{{id}}-{{uniqid}}">
-            <a class="tembiapo-door-main" href="{{url}}">
-                <span class="tembiapo-door-icon" aria-hidden="true">{{#icon}}<img src="{{icon}}" alt="" width="40" height="40">{{/icon}}{{^icon}}{{initial}}{{/icon}}</span>
-                <span class="tembiapo-door-words"><span class="tembiapo-door-title">{{title}}</span>{{#status}}<span class="tembiapo-door-status">{{status}}</span>{{/status}}</span>
-                <span class="tembiapo-door-go">{{#str}}go, block_oksigeniatembiapo{{/str}}</span>
-            </a>
-            {{#hasactions}}<div class="tembiapo-door-actions">{{#actions}}<a class="btn btn-sm btn-outline-secondary" href="{{url}}">{{label}}</a>{{/actions}}</div>{{/hasactions}}
-        </li>
-        {{/doors}}
-    </ul>
+    <section class="tembiapo-zone tembiapo-services" aria-labelledby="tembiapo-services-{{uniqid}}">
+        <h3 class="tembiapo-label" id="tembiapo-services-{{uniqid}}">{{#str}}doors, block_oksigeniatembiapo{{/str}}</h3>
+        <ul class="tembiapo-doors">
+            {{#doors}}
+            <li class="tembiapo-door{{#urgent}} is-urgent{{/urgent}}">
+                <a class="tembiapo-door-main" href="{{url}}">
+                    <span class="tembiapo-door-icon" aria-hidden="true">{{#icon}}<img src="{{icon}}" alt="" width="40" height="40">{{/icon}}{{^icon}}{{initial}}{{/icon}}</span>
+                    <span class="tembiapo-door-words"><span class="tembiapo-door-title">{{title}}</span>{{#status}}<span class="tembiapo-door-status">{{status}}</span>{{/status}}</span>
+                    {{#hasalerts}}<span class="tembiapo-count" title="{{#cleanstr}}count, block_oksigeniatembiapo, {{alertcount}}{{/cleanstr}}"><span aria-hidden="true">{{alertcount}}</span><span class="visually-hidden sr-only">{{#str}}count, block_oksigeniatembiapo, {{alertcount}}{{/str}}</span></span>{{/hasalerts}}
+                </a>
+                {{#hasactions}}<span class="tembiapo-door-actions">{{#actions}}<a href="{{url}}">{{label}}</a>{{/actions}}</span>{{/hasactions}}
+            </li>
+            {{/doors}}
+        </ul>
+    </section>
 </div>

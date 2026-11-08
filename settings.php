@@ -31,4 +31,5 @@ if ($ADMIN->fulltree) {
         get_string('hidemycourses_desc', 'block_oksigeniatembiapo'),
         1
     ));
+    $settings->add(new \block_oksigeniatembiapo\admin\setting_services());
 }

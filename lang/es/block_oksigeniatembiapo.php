@@ -25,14 +25,23 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['alerts'] = 'Por resolver';
+$string['count'] = '{$a} por resolver';
 $string['doors'] = 'Tus servicios';
 $string['go'] = 'Entrar';
 $string['hidemycourses'] = 'Ocultar «Mis cursos» a quien no tiene cursos';
 $string['hidemycourses_desc'] = 'Quien lleva un servicio sin dar clase (el comedor, la secretaría, la biblioteca) encontraría ahí una página vacía. Vuelve en cuanto tenga un curso.';
 $string['level_today'] = 'Hoy';
 $string['level_urgent'] = 'Urgente';
+$string['more'] = 'y {$a} más';
 $string['oksigeniatembiapo:addinstance'] = 'Añadir el bloque «Tu trabajo»';
 $string['oksigeniatembiapo:myaddinstance'] = 'Añadir el bloque «Tu trabajo» al área personal';
 $string['pluginname'] = 'Tu trabajo (Oksigenia Tembiapo)';
 $string['privacy:metadata'] = 'El bloque «Tu trabajo» no guarda datos personales: enseña lo que otros plugins dicen de los servicios que lleva cada persona.';
+$string['services'] = 'Los servicios';
+$string['services_desc'] = 'Los servicios que se suman a «Tu trabajo», en el orden en que salen sus puertas. La lista se rellena sola con lo que hay instalado: uno que llegue después va al final. Un servicio oculto sigue instalado, pero no salen ni su puerta ni sus avisos.';
+$string['services_hide'] = 'Ocultar';
+$string['services_name'] = 'Servicio';
+$string['services_none'] = 'Todavía no se suma a «Tu trabajo» ningún servicio de este sitio.';
+$string['services_place'] = 'Puesto de {$a}';
+$string['services_position'] = 'Puesto';
 $string['title'] = 'Tu trabajo';
