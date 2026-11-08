@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- At the top and across the whole width also on a dashboard whose theme lays its blocks out in columns.
+
 ## 0.1.0
 
 - First version: what is waiting to be sorted out across every service, the urgent first, and a door into each; the

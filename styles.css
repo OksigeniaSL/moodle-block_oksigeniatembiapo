@@ -104,3 +104,8 @@
     flex-wrap: wrap;
     gap: .5rem;
 }
+/* At the top and across the whole width, also on a dashboard whose theme lays its blocks out in a grid of columns. */
+#page-my-index #block-region-content > .block.block_oksigeniatembiapo {
+    grid-column: 1 / -1;
+    order: -1;
+}
