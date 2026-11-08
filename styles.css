@@ -1,0 +1,106 @@
+/* «Your work»: a plain first look until the art direction's design, with the theme's own variables. */
+.tembiapo {
+    display: grid;
+    gap: 1rem;
+}
+.tembiapo-label {
+    margin: 0 0 .5rem;
+    font-size: .875rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.tembiapo-alert-list,
+.tembiapo-doors {
+    display: grid;
+    gap: .5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.tembiapo-alert a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .75rem;
+    padding: .6rem .85rem;
+    border-left: .3rem solid var(--bs-warning, #f0ad4e);
+    border-radius: var(--bs-border-radius, .375rem);
+    background: var(--bs-tertiary-bg, #f8f9fa);
+    color: var(--bs-body-color, #1d2125);
+    text-decoration: none;
+}
+.tembiapo-alert.is-urgent a {
+    border-left-color: var(--bs-danger, #ca3120);
+}
+.tembiapo-badge {
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.tembiapo-alert.is-urgent .tembiapo-badge {
+    color: var(--bs-danger, #ca3120);
+}
+.tembiapo-alert-text {
+    flex: 1 1 14rem;
+    font-weight: 600;
+}
+.tembiapo-alert-service {
+    color: var(--bs-secondary-color, #6a737b);
+}
+.tembiapo-doors {
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: .75rem;
+}
+.tembiapo-door {
+    display: grid;
+    gap: .5rem;
+    padding: .85rem;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: var(--bs-border-radius-lg, .5rem);
+    background: var(--bs-body-bg, #fff);
+}
+.tembiapo-door-main {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    color: var(--bs-body-color, #1d2125);
+    text-decoration: none;
+}
+.tembiapo-door-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: .75rem;
+    background: var(--bs-secondary-bg, #e9ecef);
+    font-weight: 700;
+}
+.tembiapo-door-icon img {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+.tembiapo-door-words {
+    display: grid;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.tembiapo-door-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+.tembiapo-door-status {
+    color: var(--bs-secondary-color, #6a737b);
+    font-size: .875rem;
+}
+.tembiapo-door-go {
+    flex: none;
+    color: var(--bs-link-color, #0f6cbf);
+    font-weight: 600;
+}
+.tembiapo-door-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}

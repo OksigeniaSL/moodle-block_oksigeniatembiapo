@@ -1,0 +1,57 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_oksigeniatembiapo/board
+
+    «Your work»: what is waiting to be sorted out across every service, the urgent first, each straight to where it is
+    sorted out; and below, a door into each service. A plain first look until the art direction's design.
+
+    Example context (json):
+    {
+        "hasalerts": true,
+        "alerts": [{"text": "«Comedor» has given no sign of life since 9:12", "url": "#", "level": "urgent", "urgent": true,
+            "levellabel": "Urgent", "service": "Screens"}],
+        "hasdoors": true, "count": 1,
+        "doors": [{"key": "local_oksigeniahechauka", "id": "tembiapo-screens", "title": "Screens", "url": "#",
+            "status": "4 screens · 1 without a sign of life", "icon": "", "initial": "S", "hasactions": true,
+            "actions": [{"label": "Publish", "url": "#"}]}]
+    }
+}}
+<div class="tembiapo">
+    {{#hasalerts}}
+    <section class="tembiapo-alerts" aria-labelledby="tembiapo-alerts-{{uniqid}}">
+        <h3 class="tembiapo-label" id="tembiapo-alerts-{{uniqid}}">{{#str}}alerts, block_oksigeniatembiapo{{/str}}</h3>
+        <ul class="tembiapo-alert-list">
+            {{#alerts}}
+            <li class="tembiapo-alert is-{{level}}"><a href="{{url}}"><span class="tembiapo-badge">{{levellabel}}</span><span class="tembiapo-alert-text">{{text}}</span><small class="tembiapo-alert-service">{{service}}</small></a></li>
+            {{/alerts}}
+        </ul>
+    </section>
+    {{/hasalerts}}
+    <ul class="tembiapo-doors" aria-label="{{#cleanstr}}doors, block_oksigeniatembiapo{{/cleanstr}}">
+        {{#doors}}
+        <li class="tembiapo-door" id="{{id}}-{{uniqid}}">
+            <a class="tembiapo-door-main" href="{{url}}">
+                <span class="tembiapo-door-icon" aria-hidden="true">{{#icon}}<img src="{{icon}}" alt="" width="40" height="40">{{/icon}}{{^icon}}{{initial}}{{/icon}}</span>
+                <span class="tembiapo-door-words"><span class="tembiapo-door-title">{{title}}</span>{{#status}}<span class="tembiapo-door-status">{{status}}</span>{{/status}}</span>
+                <span class="tembiapo-door-go">{{#str}}go, block_oksigeniatembiapo{{/str}}</span>
+            </a>
+            {{#hasactions}}<div class="tembiapo-door-actions">{{#actions}}<a class="btn btn-sm btn-outline-secondary" href="{{url}}">{{label}}</a>{{/actions}}</div>{{/hasactions}}
+        </li>
+        {{/doors}}
+    </ul>
+</div>
