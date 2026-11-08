@@ -17,13 +17,26 @@
 {{!
     @template block_oksigeniatembiapo/alert
 
-    The inside of one line of «To sort out» (its list item is in board.mustache): how pressing it is, what to do, straight
-    to where it is done, and the service it is from, with its logo.
+    One line of «To sort out», inside its list item: how pressing it is (a mark, not a loud badge: the urgent come first
+    and in bold), the service it is from, with the logo of its product, what to do, and the way to where it is done. The
+    whole line is the link.
+
+    Context variables required for this template:
+    * text - what is waiting, in plain text
+    * url - where it is sorted out
+    * urgent, levellabel - whether it is urgent, and the word for its level, for screen readers
+    * service, serviceicon - the name of the service and the address of its logo
 
     Example context (json):
     {
-        "text": "«Comedor» has given no sign of life since 9:12", "url": "#", "level": "urgent", "urgent": true,
-        "levellabel": "Urgent", "service": "Screens", "serviceicon": ""
+        "text": "One screen has given no sign of life since 9:12", "url": "#", "level": "urgent", "urgent": true,
+        "levellabel": "Urgent", "service": "Screens", "servicekey": "local_example",
+        "serviceicon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg"
     }
 }}
-<a href="{{url}}"><span class="tembiapo-badge">{{levellabel}}</span><span class="tembiapo-alert-text">{{text}}</span><span class="tembiapo-alert-service">{{#serviceicon}}<img src="{{serviceicon}}" alt="" width="16" height="16">{{/serviceicon}}{{service}}</span></a>
+<a class="tbp-todo-link" href="{{url}}">
+    <span class="tbp-mark">{{#urgent}}<svg class="tbp-mark-urgent" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle class="tbp-mark-disc" cx="10" cy="10" r="8.25"/><path d="M10 5.75v5"/><circle class="tbp-mark-dot" cx="10" cy="14.1" r="1.1"/></svg>{{/urgent}}{{^urgent}}<svg class="tbp-mark-today" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="7.25"/><path d="M10 6.25V10l2.6 1.6"/></svg>{{/urgent}}<span class="tbp-sr">{{levellabel}}, </span></span>
+    <span class="tbp-tag"><span class="tbp-plate tbp-plate-mini" aria-hidden="true"><img src="{{serviceicon}}" alt="" width="16" height="16"></span><span class="tbp-tag-name">{{service}}</span><span class="tbp-sr">: </span></span>
+    <span class="tbp-todo-text">{{text}}</span>
+    <span class="tbp-todo-go" aria-hidden="true"><span class="tbp-todo-go-label">{{#str}}resolve, block_oksigeniatembiapo{{/str}}</span><svg viewBox="0 0 16 16" focusable="false"><path d="M6 3.5L10.5 8 6 12.5"/></svg></span>
+</a>

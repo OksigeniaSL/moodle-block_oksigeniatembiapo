@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_oksigeniatembiapo';
-$plugin->version   = 2026110803;
+$plugin->version   = 2026110804;
 $plugin->release   = '0.2.0';
 $plugin->requires  = 2024100700;
 $plugin->supported = [405, 600];

@@ -76,6 +76,10 @@ class block_oksigeniatembiapo extends block_base {
         $board = \block_oksigeniatembiapo\local\board::collect((int) $USER->id);
         if ($board['hasdoors']) {
             $this->content->text = $OUTPUT->render_from_template('block_oksigeniatembiapo/board', $board);
+            // The figures of each state in bold: a plain script, because Firefox 98 does not start AMD modules in Moodle 5.3.
+            // Without it the panel is the same, in one weight.
+            $version = ['v' => (string) get_config('block_oksigeniatembiapo', 'version')];
+            $this->page->requires->js(new \moodle_url('/blocks/oksigeniatembiapo/js/tembiapo.js', $version));
         }
         return $this->content;
     }

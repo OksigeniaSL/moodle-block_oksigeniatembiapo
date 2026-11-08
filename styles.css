@@ -1,231 +1,781 @@
-/* «Your work»: a plain look until the art direction's design, with the theme's own variables. One panel: «To sort out»
-   above, «Your services» below, the doors in a grid that fits however many there are. */
-.tembiapo {
+/* Oksigenia Tembiapo, «Your work»: art direction of 8 November 2026.
+ *
+ * One panel, whichever services the site has and however many: above, «To sort out», every alert in one list, the
+ * urgent first; below, «Your services», a door into each, all the same size. The hierarchy is in the order and the
+ * weight; colour only where it means something (the mark of an urgent alert, the count of a door with one).
+ *
+ *   .tbp.tbp-one | .tbp-row | .tbp-grid | .tbp-compact
+ *     .tbp-todo                               «To sort out» (only when there is something)
+ *       .tbp-todo-item.is-urgent | .is-today  > a.tbp-todo-link: .tbp-mark, .tbp-tag, .tbp-todo-text, .tbp-todo-go
+ *       details.tbp-more                      «and N more»
+ *     .tbp-services
+ *       ul.tbp-doors.tbp-cols-1…4             > li.tbp-door[.is-urgent] > .tbp-door-card
+ *         .tbp-plate, .tbp-count, a.tbp-door-link (the whole door), .tbp-door-status, .tbp-door-actions
+ *
+ * The logos keep the colours of their brands, so they sit on a plate that is always light, in the light theme and in
+ * the dark one: it is the only colour here that does not come from the theme, on purpose. Everything else is the
+ * theme's variables (Bootstrap 5 in Moodle 5.x, Bootstrap 4 in 4.5, Boost's values last), in light and in dark
+ * (<html data-bs-theme>).
+ *
+ * Browsers: Chrome 93 and Firefox 98 and later (the classroom boards). No :has(), no container queries, no
+ * color-mix(); the layout changes with media queries. No heavy effects: no blur, no filters, no animation on entering;
+ * a short transition on hover and, with motion allowed, two soft pulses of the mark of an urgent alert. */
+
+/* --- The panel ----------------------------------------------------------------------------------------------------- */
+.block_oksigeniatembiapo .tbp {
+    --tbp-ink: var(--bs-body-color, #1d2125);
+    --tbp-muted: var(--bs-secondary-color, #5f666d);
+    --tbp-line: var(--bs-border-color, #dee2e6);
+    --tbp-accent: var(--bs-link-color, var(--primary, #0f6cbf));
+    --tbp-urgent: var(--bs-danger, var(--danger, #ca3120));
+    --tbp-urgent-rgb: var(--bs-danger-rgb, 202, 49, 32);
+    --tbp-urgent-ink: var(--bs-danger, var(--danger, #ca3120));
+    --tbp-today: var(--bs-warning-text-emphasis, #7a5514);
+    --tbp-today-rgb: var(--bs-warning-rgb, 240, 173, 78);
+    --tbp-hover-rgb: var(--bs-body-color-rgb, 29, 33, 37);
+    --tbp-door: var(--bs-tertiary-bg, #f8f9fa);
+    --tbp-door-hover: var(--bs-card-bg, #fff);
+    --tbp-door-line: var(--bs-border-color, #dee2e6);
+    --tbp-plate: #fff;
+    --tbp-plate-ring: rgba(16, 24, 40, .1);
+    --tbp-count: var(--bs-secondary-bg, #e9ecef);
+    --tbp-count-ink: var(--bs-body-color, #1d2125);
+    --tbp-radius: .75rem;
+    --tbp-gap: .75rem;
     display: grid;
     gap: 1.25rem;
+    color: var(--tbp-ink);
 }
-.tembiapo-label {
-    margin: 0 0 .5rem;
+
+[data-bs-theme="dark"] .block_oksigeniatembiapo .tbp {
+    --tbp-urgent-ink: var(--bs-danger-text-emphasis, #df8379);
+    --tbp-door: rgba(255, 255, 255, .04);
+    --tbp-door-hover: rgba(255, 255, 255, .075);
+    --tbp-plate: #f1f3f5;
+    --tbp-plate-ring: rgba(0, 0, 0, .3);
+    --tbp-count: rgba(255, 255, 255, .12);
+}
+
+/* Moodle's dark theme underlines every link of the page; the lines and the doors are controls, not words in a text.
+ * Two ids, because its rule carries one id and five classes. The block lives only on the dashboard. */
+#page-my-index #region-main .block_oksigeniatembiapo .tbp a {
+    text-decoration: none;
+}
+
+.block_oksigeniatembiapo .tbp-zone {
+    min-width: 0;
+}
+
+.block_oksigeniatembiapo .tbp-todo + .tbp-services {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--tbp-line);
+}
+
+.block_oksigeniatembiapo .tbp-heading {
+    margin: 0 0 .625rem;
+    color: var(--tbp-muted);
     font-size: .8125rem;
     font-weight: 700;
-    letter-spacing: .04em;
-    text-transform: uppercase;
+    letter-spacing: .02em;
+    line-height: 1.2;
 }
-.tembiapo-alert-list,
-.tembiapo-doors {
+
+.block_oksigeniatembiapo .tbp-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* --- The plate: where every logo sits ------------------------------------------------------------------------------- */
+.block_oksigeniatembiapo .tbp-plate {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: .75rem;
+    background: var(--tbp-plate);
+    box-shadow: inset 0 0 0 1px var(--tbp-plate-ring), 0 1px 2px rgba(16, 24, 40, .06);
+}
+
+.block_oksigeniatembiapo .tbp-plate img {
+    display: block;
+    width: 2rem;
+    max-width: none;
+    height: 2rem;
+    border-radius: 22%;
+    object-fit: contain;
+}
+
+.block_oksigeniatembiapo .tbp-plate-mini {
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: .375rem;
+    box-shadow: inset 0 0 0 1px var(--tbp-plate-ring);
+}
+
+.block_oksigeniatembiapo .tbp-plate-mini img {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* --- To sort out ---------------------------------------------------------------------------------------------------- */
+.block_oksigeniatembiapo .tbp-todo-list {
     margin: 0;
     padding: 0;
     list-style: none;
 }
-.tembiapo-alert-list {
-    display: grid;
-    gap: .4rem;
+
+.block_oksigeniatembiapo .tbp-todo-item + .tbp-todo-item,
+.block_oksigeniatembiapo .tbp-more .tbp-todo-item:first-child {
+    border-top: 1px solid var(--tbp-line);
 }
 
-/* To sort out: one list, every service mixed. */
-.tembiapo-alert a {
-    display: flex;
-    flex-wrap: wrap;
+.block_oksigeniatembiapo .tbp-todo-link {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.25rem 8.5rem minmax(0, 1fr) auto;
+    grid-template-areas: "mark tag text go";
     align-items: center;
     gap: .25rem .75rem;
-    padding: .55rem .85rem;
-    border-left: .3rem solid var(--bs-warning, #f0ad4e);
-    border-radius: var(--bs-border-radius, .375rem);
-    background: var(--bs-tertiary-bg, #f8f9fa);
-    color: var(--bs-body-color, #1d2125);
-    text-decoration: none;
-}
-.tembiapo-alert.is-urgent a {
-    border-left-color: var(--bs-danger, #ca3120);
-}
-.tembiapo-badge {
-    flex: none;
-    font-size: .75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-.tembiapo-alert.is-urgent .tembiapo-badge {
-    color: var(--bs-danger, #ca3120);
-}
-.tembiapo-alert-text {
-    flex: 1 1 14rem;
-    font-weight: 600;
-}
-.tembiapo-alert-service {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    gap: .35rem;
-    color: var(--bs-secondary-color, #6a737b);
-    font-size: .8125rem;
-}
-.tembiapo-alert-service img {
-    width: 1rem;
-    height: 1rem;
-}
-.tembiapo-more summary {
-    margin-top: .5rem;
-    color: var(--bs-link-color, #0f6cbf);
-    font-weight: 600;
-    cursor: pointer;
-}
-.tembiapo-more .tembiapo-alert-list {
-    margin-top: .4rem;
+    margin: 0 -.5rem;
+    padding: .625rem .5rem;
+    border-radius: .5rem;
+    color: var(--tbp-ink);
+    transition: background-color .15s ease-out;
 }
 
-/* Your services: every door the same size, in a fixed order. */
-.tembiapo-doors {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: .75rem;
+.block_oksigeniatembiapo .tbp-todo-link:hover,
+.block_oksigeniatembiapo .tbp-todo-link:focus {
+    background-color: rgba(var(--tbp-hover-rgb), .045);
+    color: var(--tbp-ink);
 }
-.tembiapo.cols-1 .tembiapo-doors {
-    grid-template-columns: minmax(0, 1fr);
+
+.block_oksigeniatembiapo .tbp-todo-link:focus-visible {
+    outline: 0;
+    box-shadow: inset 0 0 0 .15rem var(--tbp-accent);
 }
-.tembiapo.cols-2 .tembiapo-doors {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+.block_oksigeniatembiapo .is-urgent .tbp-todo-link {
+    background-color: rgba(var(--tbp-urgent-rgb), .045);
 }
-.tembiapo.cols-3 .tembiapo-doors {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+.block_oksigeniatembiapo .is-urgent .tbp-todo-link:hover,
+.block_oksigeniatembiapo .is-urgent .tbp-todo-link:focus {
+    background-color: rgba(var(--tbp-urgent-rgb), .085);
 }
-.tembiapo-door {
-    display: grid;
-    align-content: start;
+
+.block_oksigeniatembiapo .is-urgent + .is-urgent .tbp-todo-link {
+    margin-top: 1px;
+}
+
+/* The mark: a filled disc with «!» for the urgent, a clock for today. Shape and colour, never colour alone. */
+.block_oksigeniatembiapo .tbp-mark {
+    position: relative;
+    grid-area: mark;
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.block_oksigeniatembiapo .tbp-mark svg {
+    position: relative;
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    overflow: visible;
+}
+
+.block_oksigeniatembiapo .tbp-mark-disc {
+    fill: var(--tbp-urgent);
+}
+
+.block_oksigeniatembiapo .tbp-mark-urgent path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+}
+
+.block_oksigeniatembiapo .tbp-mark-dot {
+    fill: #fff;
+}
+
+.block_oksigeniatembiapo .tbp-mark-today circle {
+    fill: rgba(var(--tbp-today-rgb), .3);
+    stroke: var(--tbp-today);
+    stroke-width: 1.6;
+}
+
+.block_oksigeniatembiapo .tbp-mark-today path {
+    fill: none;
+    stroke: var(--tbp-today);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* The service, with the logo of its product: a short label in a column of its own, so the texts start together. */
+.block_oksigeniatembiapo .tbp-tag {
+    grid-area: tag;
+    display: flex;
+    align-items: center;
     gap: .5rem;
-    padding: .85rem;
-    border: 1px solid var(--bs-border-color, #dee2e6);
-    border-radius: var(--bs-border-radius-lg, .5rem);
-    background: var(--bs-body-bg, #fff);
-}
-.tembiapo-door.is-urgent {
-    border-color: var(--bs-danger, #ca3120);
-}
-.tembiapo-door-main {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    color: var(--bs-body-color, #1d2125);
-    text-decoration: none;
-}
-.tembiapo-door-icon {
-    display: grid;
-    flex: none;
-    place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    font-weight: 700;
-}
-.tembiapo-door-icon img {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-.tembiapo-door-words {
-    display: grid;
-    flex: 1 1 auto;
     min-width: 0;
-}
-.tembiapo-door-title {
-    font-size: 1.0625rem;
-    font-weight: 700;
-}
-.tembiapo-door-status {
-    color: var(--bs-secondary-color, #6a737b);
-    font-size: .875rem;
-}
-.tembiapo-count {
-    display: grid;
-    flex: none;
-    place-items: center;
-    min-width: 1.6rem;
-    height: 1.6rem;
-    padding: 0 .4rem;
-    border-radius: 1rem;
-    background: var(--bs-warning, #f0ad4e);
-    color: #1d2125;
+    color: var(--tbp-muted);
     font-size: .8125rem;
-    font-weight: 700;
-}
-.tembiapo-door.is-urgent .tembiapo-count {
-    background: var(--bs-danger, #ca3120);
-    color: #fff;
-}
-.tembiapo-door-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .25rem 1rem;
-    padding-left: 3.25rem;
-    font-size: .875rem;
+    font-weight: 600;
+    line-height: 1.2;
 }
 
-/* The theme may underline every link (dark mode does): here the whole line or door is the link. */
-.tembiapo .tembiapo-alert a,
-.tembiapo .tembiapo-door a {
-    text-decoration: none;
-}
-
-@media (hover: hover) {
-    .tembiapo .tembiapo-alert a:hover .tembiapo-alert-text,
-    .tembiapo .tembiapo-door-main:hover .tembiapo-door-title,
-    .tembiapo .tembiapo-door-actions a:hover {
-        text-decoration: underline;
-    }
-}
-
-/* One service: one wide door, its shortcuts beside it. */
-.tembiapo.is-one .tembiapo-door {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-}
-.tembiapo.is-one .tembiapo-door-main {
-    flex: 1 1 18rem;
-}
-.tembiapo.is-one .tembiapo-door-actions {
-    padding-left: 0;
-}
-
-/* Many services: smaller doors, the state on one line. */
-.tembiapo.is-compact .tembiapo-door {
-    gap: .35rem;
-    padding: .6rem .7rem;
-}
-.tembiapo.is-compact .tembiapo-door-icon,
-.tembiapo.is-compact .tembiapo-door-icon img {
-    width: 2rem;
-    height: 2rem;
-}
-.tembiapo.is-compact .tembiapo-door-title {
-    font-size: 1rem;
-}
-.tembiapo.is-compact .tembiapo-door-status {
+.block_oksigeniatembiapo .tbp-tag-name {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.tembiapo.is-compact .tembiapo-door-actions {
-    padding-left: 2.75rem;
+
+.block_oksigeniatembiapo .tbp-todo-text {
+    grid-area: text;
+    min-width: 0;
+    font-size: .9375rem;
+    line-height: 1.35;
 }
 
-/* Narrower: four become two, then one (two when compact). */
+.block_oksigeniatembiapo .is-urgent .tbp-todo-text {
+    font-weight: 700;
+}
+
+.block_oksigeniatembiapo .tbp-todo-go {
+    grid-area: go;
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    color: var(--tbp-accent);
+    font-size: .8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* «Sort it out» in words on the urgent lines; on the others, the arrow, and the words when the line is pointed at. */
+.block_oksigeniatembiapo .is-today .tbp-todo-go-label {
+    opacity: 0;
+    transition: opacity .15s ease-out;
+}
+
+.block_oksigeniatembiapo .is-today .tbp-todo-link:hover .tbp-todo-go-label,
+.block_oksigeniatembiapo .is-today .tbp-todo-link:focus .tbp-todo-go-label {
+    opacity: 1;
+}
+
+.block_oksigeniatembiapo .tbp-todo-go svg {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform .15s ease-out;
+}
+
+.block_oksigeniatembiapo .tbp-todo-link:hover .tbp-todo-go svg {
+    transform: translateX(2px);
+}
+
+/* «and N more»: the rest of the list, in the same column as the texts. */
+.block_oksigeniatembiapo .tbp-more {
+    border-top: 1px solid var(--tbp-line);
+}
+
+.block_oksigeniatembiapo .tbp-more-toggle {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+    padding: .625rem 0 .125rem 2rem;
+    color: var(--tbp-accent);
+    font-size: .875rem;
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+}
+
+.block_oksigeniatembiapo .tbp-more-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.block_oksigeniatembiapo .tbp-more-toggle:hover {
+    text-decoration: underline;
+}
+
+.block_oksigeniatembiapo .tbp-more-chevron {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform .15s ease-out;
+}
+
+.block_oksigeniatembiapo .tbp-more-open,
+.block_oksigeniatembiapo .tbp-more[open] .tbp-more-closed {
+    display: none;
+}
+
+.block_oksigeniatembiapo .tbp-more[open] .tbp-more-open {
+    display: inline;
+}
+
+.block_oksigeniatembiapo .tbp-more[open] .tbp-more-toggle {
+    padding-bottom: .5rem;
+}
+
+.block_oksigeniatembiapo .tbp-more[open] .tbp-more-chevron {
+    transform: rotate(180deg);
+}
+
+/* --- Your services: the doors --------------------------------------------------------------------------------------- */
+.block_oksigeniatembiapo .tbp-doors {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: var(--tbp-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.block_oksigeniatembiapo .tbp-cols-1 {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.block_oksigeniatembiapo .tbp-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.block_oksigeniatembiapo .tbp-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.block_oksigeniatembiapo .tbp-door {
+    display: flex;
+    min-width: 0;
+}
+
+.block_oksigeniatembiapo .tbp-door-card {
+    position: relative;
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+        "plate count"
+        "title title"
+        "status status"
+        "links links";
+    min-width: 0;
+    padding: .875rem .9375rem;
+    border: 1px solid var(--tbp-door-line);
+    border-radius: var(--tbp-radius);
+    background: var(--tbp-door);
+    transition: border-color .15s ease-out, background-color .15s ease-out, transform .15s ease-out;
+}
+
+.block_oksigeniatembiapo .tbp-door-card > .tbp-plate {
+    grid-area: plate;
+}
+
+.block_oksigeniatembiapo .tbp-count {
+    grid-area: count;
+    align-self: start;
+    justify-self: end;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 .45rem;
+    border-radius: 1rem;
+    background: var(--tbp-count);
+    color: var(--tbp-count-ink);
+    font-size: .8125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5rem;
+    text-align: center;
+}
+
+.block_oksigeniatembiapo .is-urgent .tbp-count {
+    background: var(--tbp-urgent);
+    color: #fff;
+}
+
+/* The name is the link, and its ::after covers the whole door; the shortcuts stay above it. */
+.block_oksigeniatembiapo .tbp-door-link {
+    grid-area: title;
+    display: block;
+    margin-top: .75rem;
+    color: var(--tbp-ink);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.block_oksigeniatembiapo .tbp-door-link:hover,
+.block_oksigeniatembiapo .tbp-door-link:focus {
+    color: var(--tbp-ink);
+}
+
+.block_oksigeniatembiapo .tbp-door-link::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    bottom: -1px;
+    left: -1px;
+    z-index: 1;
+    border-radius: var(--tbp-radius);
+}
+
+.block_oksigeniatembiapo .tbp-door-link:focus {
+    outline: 0;
+}
+
+.block_oksigeniatembiapo .tbp-door-link:focus-visible::after {
+    box-shadow: 0 0 0 .2rem var(--tbp-accent);
+}
+
+.block_oksigeniatembiapo .tbp-arrow {
+    display: inline-block;
+    width: .95rem;
+    height: .95rem;
+    margin-left: .3rem;
+    vertical-align: -.1em;
+    fill: none;
+    stroke: var(--tbp-accent);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform .15s ease-out;
+}
+
+.block_oksigeniatembiapo .tbp-door-status {
+    grid-area: status;
+    display: -webkit-box;
+    margin: .25rem 0 0;
+    overflow: hidden;
+    color: var(--tbp-muted);
+    font-size: .875rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.block_oksigeniatembiapo .tbp-fig {
+    color: var(--tbp-ink);
+    font-weight: 700;
+}
+
+.block_oksigeniatembiapo .tbp-door-actions {
+    position: relative;
+    z-index: 2;
+    grid-area: links;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    align-self: end;
+    gap: .25rem .875rem;
+    margin: .75rem 0 0;
+    font-size: .8125rem;
+    line-height: 1.3;
+    pointer-events: none;
+}
+
+.block_oksigeniatembiapo .tbp-door-action {
+    color: var(--tbp-accent);
+    font-weight: 600;
+    pointer-events: auto;
+}
+
+#page-my-index #region-main .block_oksigeniatembiapo .tbp a.tbp-door-action:hover,
+#page-my-index #region-main .block_oksigeniatembiapo .tbp a.tbp-door-action:focus {
+    text-decoration: underline;
+}
+
+@media (hover: hover) {
+    .block_oksigeniatembiapo .tbp-door-card:hover {
+        border-color: var(--tbp-accent);
+        background: var(--tbp-door-hover);
+        transform: translateY(-1px);
+    }
+
+    .block_oksigeniatembiapo .tbp-door-card:hover .tbp-arrow {
+        transform: translateX(2px);
+    }
+}
+
+/* One service: the same door, wide, its pieces in a line. */
+.block_oksigeniatembiapo .tbp-one .tbp-door-card {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "plate title links count"
+        "plate status links count";
+    align-items: center;
+    column-gap: 1rem;
+    padding: 1rem 1.125rem;
+}
+
+.block_oksigeniatembiapo .tbp-one .tbp-door-card > .tbp-plate {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: .875rem;
+}
+
+.block_oksigeniatembiapo .tbp-one .tbp-door-card > .tbp-plate img {
+    width: 2.375rem;
+    height: 2.375rem;
+}
+
+.block_oksigeniatembiapo .tbp-one .tbp-door-link {
+    align-self: end;
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+.block_oksigeniatembiapo .tbp-one .tbp-door-status {
+    align-self: start;
+}
+
+.block_oksigeniatembiapo .tbp-one .tbp-door-actions,
+.block_oksigeniatembiapo .tbp-one .tbp-count {
+    align-self: center;
+    margin: 0;
+}
+
+.block_oksigeniatembiapo .tbp-one .tbp-door-actions {
+    padding-right: .25rem;
+}
+
+/* Many services: lower doors, the state in one line, the shortcuts inside each service. */
+.block_oksigeniatembiapo .tbp-compact .tbp-doors {
+    gap: .625rem;
+}
+
+.block_oksigeniatembiapo .tbp-compact .tbp-door-card {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "plate title count"
+        "plate status count";
+    align-items: center;
+    column-gap: .625rem;
+    padding: .625rem .75rem;
+}
+
+.block_oksigeniatembiapo .tbp-compact .tbp-door-card > .tbp-plate {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: .625rem;
+}
+
+.block_oksigeniatembiapo .tbp-compact .tbp-door-card > .tbp-plate img {
+    width: 1.625rem;
+    height: 1.625rem;
+}
+
+.block_oksigeniatembiapo .tbp-compact .tbp-door-link {
+    align-self: end;
+    margin: 0;
+    overflow: hidden;
+    font-size: .9375rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.block_oksigeniatembiapo .tbp-compact .tbp-door-status {
+    display: block;
+    align-self: start;
+    margin: .0625rem 0 0;
+    font-size: .8125rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.block_oksigeniatembiapo .tbp-compact .tbp-door-actions,
+.block_oksigeniatembiapo .tbp-compact .tbp-arrow {
+    display: none;
+}
+
+.block_oksigeniatembiapo .tbp-compact .tbp-count {
+    align-self: center;
+}
+
+/* A dashboard of limited width (Boost's, some 780 px): compact doors three to a row, so the names still fit. */
+@media (min-width: 992px) {
+    body.limitedwidth .block_oksigeniatembiapo .tbp-compact .tbp-doors {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* A wide dashboard (a theme at full width, the classroom board): compact doors five to a row. */
+@media (min-width: 1400px) {
+    body:not(.limitedwidth) .block_oksigeniatembiapo .tbp-compact .tbp-doors {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+/* Narrower: two per row, the line of an alert without the word «Sort it out». */
 @media (max-width: 991.98px) {
-    .tembiapo.cols-3 .tembiapo-doors,
-    .tembiapo.cols-4 .tembiapo-doors {
+    .block_oksigeniatembiapo .tbp-cols-3,
+    .block_oksigeniatembiapo .tbp-cols-4,
+    body:not(.limitedwidth) .block_oksigeniatembiapo .tbp-compact .tbp-doors {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .block_oksigeniatembiapo .tbp-todo-link {
+        grid-template-columns: 1.25rem 8rem minmax(0, 1fr) auto;
+    }
+
+    .block_oksigeniatembiapo .tbp-todo-go-label {
+        display: none;
     }
 }
 
+/* A phone: one per row, every door in a line like the wide one, the shortcuts below; each alert with its service above
+ * its text. */
 @media (max-width: 575.98px) {
-    .tembiapo.cols-2 .tembiapo-doors,
-    .tembiapo.cols-3 .tembiapo-doors,
-    .tembiapo.cols-4 .tembiapo-doors {
+    .block_oksigeniatembiapo .tbp-doors,
+    .block_oksigeniatembiapo .tbp-cols-3,
+    .block_oksigeniatembiapo .tbp-cols-4,
+    body:not(.limitedwidth) .block_oksigeniatembiapo .tbp-compact .tbp-doors {
         grid-template-columns: minmax(0, 1fr);
+        gap: .5rem;
     }
-    .tembiapo.is-compact.cols-4 .tembiapo-doors {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    .block_oksigeniatembiapo .tbp .tbp-door-card {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-rows: auto auto auto;
+        grid-template-areas:
+            "plate title count"
+            "plate status count"
+            "links links links";
+        align-items: center;
+        column-gap: .75rem;
+        padding: .75rem .875rem;
     }
-    .tembiapo-door-actions {
-        padding-left: 0;
+
+    .block_oksigeniatembiapo .tbp .tbp-door-card > .tbp-plate {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: .6875rem;
+    }
+
+    .block_oksigeniatembiapo .tbp .tbp-door-card > .tbp-plate img {
+        width: 1.8125rem;
+        height: 1.8125rem;
+    }
+
+    .block_oksigeniatembiapo .tbp-tag .tbp-plate-mini {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: .3125rem;
+    }
+
+    .block_oksigeniatembiapo .tbp-tag .tbp-plate-mini img {
+        width: .875rem;
+        height: .875rem;
+    }
+
+    .block_oksigeniatembiapo .tbp .tbp-door-link {
+        align-self: end;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .block_oksigeniatembiapo .tbp .tbp-door-status {
+        align-self: start;
+        margin-top: .125rem;
+    }
+
+    .block_oksigeniatembiapo .tbp .tbp-count {
+        align-self: center;
+    }
+
+    .block_oksigeniatembiapo .tbp-one .tbp-door-actions,
+    .block_oksigeniatembiapo .tbp .tbp-door-actions {
+        align-self: start;
+        margin: .625rem 0 0;
+        padding: 0;
+    }
+
+    .block_oksigeniatembiapo .tbp-todo-link {
+        grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+        grid-template-areas:
+            "mark tag go"
+            "mark text go";
+        align-items: start;
+        row-gap: .2rem;
+    }
+
+    .block_oksigeniatembiapo .tbp-todo-go {
+        align-self: center;
+    }
+
+    .block_oksigeniatembiapo .tbp-more-toggle {
+        padding-left: 2rem;
+    }
+}
+
+/* With motion allowed: the mark of an urgent alert breathes twice when the page opens, and then stays still. */
+@media (prefers-reduced-motion: no-preference) {
+    .block_oksigeniatembiapo .is-urgent .tbp-mark::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-radius: 50%;
+        background: var(--tbp-urgent);
+        opacity: 0;
+        animation: tbp-breathe 1.6s ease-out .4s 2;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .block_oksigeniatembiapo .tbp-door-card,
+    .block_oksigeniatembiapo .tbp-arrow,
+    .block_oksigeniatembiapo .tbp-todo-link,
+    .block_oksigeniatembiapo .tbp-todo-go svg,
+    .block_oksigeniatembiapo .tbp-more-chevron {
+        transition: none;
+    }
+
+    .block_oksigeniatembiapo .tbp-door-card:hover,
+    .block_oksigeniatembiapo .tbp-door-card:hover .tbp-arrow,
+    .block_oksigeniatembiapo .tbp-todo-link:hover .tbp-todo-go svg {
+        transform: none;
+    }
+}
+
+@keyframes tbp-breathe {
+    0% {
+        opacity: .35;
+        transform: scale(.7);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(2);
     }
 }
 

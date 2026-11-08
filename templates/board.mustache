@@ -17,51 +17,81 @@
 {{!
     @template block_oksigeniatembiapo/board
 
-    «Your work»: one panel for every service the person runs. Above, «To sort out»: the alerts of all of them in one list,
-    the urgent first, five in sight and the rest behind «and N more». Below, «Your services»: a door into each, all the same
-    size, in a fixed order: one wide door, a row of up to four, rows of four, or compact when there are many. A plain look
-    until the art direction's design.
+    «Your work»: one panel for every service the person runs, whichever and however many the site has. Above, «To sort
+    out»: the alerts of all of them in one list, the urgent first, five in sight and the rest behind «and N more» (a
+    details element, so it opens without JavaScript). Below, «Your services»: a door into each, all the same size, with
+    the logo of its product on a light plate, its name, its state, how many alerts it has (red only when one is urgent)
+    and its shortcuts. The doors fit the number: one wide door, a row of two to four, rows of four, or compact doors
+    when there are more than eight; on narrower screens, two per row and then one (media queries only).
+
+    Classes required for JS:
+    * tbp-door-status - js/tembiapo.js sets the figures of the state in bold; without it the state is plain text
+
+    Context variables required for this template:
+    * hasalerts - whether there is anything to sort out; without it, that part does not show
+    * shown - the first five alerts, the urgent first (see block_oksigeniatembiapo/alert)
+    * more, hasmore, morelabel - the rest, behind «and N more»
+    * doors - one per service, in the site's order (see block_oksigeniatembiapo/door)
+    * layout - one, row, grid or compact
+    * cols - the doors per row on a wide screen, 1 to 4
 
     Example context (json):
     {
-        "hasalerts": true, "hasmore": false, "morecount": 0, "morelabel": "", "more": [],
-        "shown": [{"text": "«Comedor» has given no sign of life since 9:12", "url": "#", "level": "urgent", "urgent": true,
-            "levellabel": "Urgent", "service": "Screens", "serviceicon": ""}],
-        "hasdoors": true, "count": 1, "cols": 1, "layout": "one",
-        "doors": [{"key": "local_oksigeniahechauka", "id": "tembiapo-screens", "title": "Screens", "url": "#",
-            "status": "4 screens · 1 without a sign of life", "icon": "", "initial": "S", "alertcount": 1, "hasalerts": true,
-            "urgent": true, "hasactions": true, "actions": [{"label": "Publish", "url": "#"}]}]
+        "hasalerts": true,
+        "shown": [
+            {"text": "4 pupils without a menu for tomorrow; it closes at 10:30", "url": "#", "level": "urgent",
+                "urgent": true, "levellabel": "Urgent", "service": "Canteen", "servicekey": "local_example",
+                "serviceicon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg"},
+            {"text": "3 books are due today", "url": "#", "level": "today", "urgent": false, "levellabel": "Today",
+                "service": "Library", "servicekey": "local_other",
+                "serviceicon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg"}
+        ],
+        "hasmore": true, "morecount": 1, "morelabel": "and 1 more",
+        "more": [
+            {"text": "2 holds are ready to collect", "url": "#", "level": "today", "urgent": false, "levellabel": "Today",
+                "service": "Library", "servicekey": "local_other",
+                "serviceicon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg"}
+        ],
+        "hasdoors": true, "count": 2, "cols": 2, "layout": "row",
+        "doors": [
+            {"key": "local_example", "id": "tembiapo-local_example", "title": "Canteen", "url": "#",
+                "status": "312 menus today · 4 without a choice",
+                "icon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg", "alertcount": 1,
+                "hasalerts": true, "urgent": true, "hasactions": true,
+                "actions": [{"label": "Today's menu", "url": "#"}, {"label": "Orders", "url": "#"}]},
+            {"key": "local_other", "id": "tembiapo-local_other", "title": "Library", "url": "#",
+                "status": "1,284 books · 37 on loan",
+                "icon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg", "alertcount": 2,
+                "hasalerts": true, "urgent": false, "hasactions": false, "actions": []}
+        ]
     }
 }}
-<div class="tembiapo is-{{layout}} cols-{{cols}}">
+<div class="tbp tbp-{{layout}}">
     {{#hasalerts}}
-    <section class="tembiapo-zone tembiapo-alerts" aria-labelledby="tembiapo-alerts-{{uniqid}}">
-        <h3 class="tembiapo-label" id="tembiapo-alerts-{{uniqid}}">{{#str}}alerts, block_oksigeniatembiapo{{/str}}</h3>
-        <ul class="tembiapo-alert-list">
-            {{#shown}}<li class="tembiapo-alert is-{{level}}">{{> block_oksigeniatembiapo/alert }}</li>{{/shown}}
+    <section class="tbp-zone tbp-todo" aria-labelledby="tbp-{{uniqid}}-todo">
+        <h4 class="tbp-heading" id="tbp-{{uniqid}}-todo">{{#str}}alerts, block_oksigeniatembiapo{{/str}}</h4>
+        <ul class="tbp-todo-list">
+            {{#shown}}
+            <li class="tbp-todo-item is-{{level}}">{{> block_oksigeniatembiapo/alert }}</li>
+            {{/shown}}
         </ul>
         {{#hasmore}}
-        <details class="tembiapo-more">
-            <summary>{{morelabel}}</summary>
-            <ul class="tembiapo-alert-list">
-                {{#more}}<li class="tembiapo-alert is-{{level}}">{{> block_oksigeniatembiapo/alert }}</li>{{/more}}
+        <details class="tbp-more">
+            <summary class="tbp-more-toggle"><span class="tbp-more-closed">{{morelabel}}</span><span class="tbp-more-open">{{#str}}fewer, block_oksigeniatembiapo{{/str}}</span><svg class="tbp-more-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4"/></svg></summary>
+            <ul class="tbp-todo-list">
+                {{#more}}
+                <li class="tbp-todo-item is-{{level}}">{{> block_oksigeniatembiapo/alert }}</li>
+                {{/more}}
             </ul>
         </details>
         {{/hasmore}}
     </section>
     {{/hasalerts}}
-    <section class="tembiapo-zone tembiapo-services" aria-labelledby="tembiapo-services-{{uniqid}}">
-        <h3 class="tembiapo-label" id="tembiapo-services-{{uniqid}}">{{#str}}doors, block_oksigeniatembiapo{{/str}}</h3>
-        <ul class="tembiapo-doors">
+    <section class="tbp-zone tbp-services" aria-labelledby="tbp-{{uniqid}}-services">
+        <h4 class="tbp-heading{{^hasalerts}} tbp-sr{{/hasalerts}}" id="tbp-{{uniqid}}-services">{{#str}}doors, block_oksigeniatembiapo{{/str}}</h4>
+        <ul class="tbp-doors tbp-cols-{{cols}}">
             {{#doors}}
-            <li class="tembiapo-door{{#urgent}} is-urgent{{/urgent}}">
-                <a class="tembiapo-door-main" href="{{url}}">
-                    <span class="tembiapo-door-icon" aria-hidden="true">{{#icon}}<img src="{{icon}}" alt="" width="40" height="40">{{/icon}}{{^icon}}{{initial}}{{/icon}}</span>
-                    <span class="tembiapo-door-words"><span class="tembiapo-door-title">{{title}}</span>{{#status}}<span class="tembiapo-door-status">{{status}}</span>{{/status}}</span>
-                    {{#hasalerts}}<span class="tembiapo-count" title="{{#cleanstr}}count, block_oksigeniatembiapo, {{alertcount}}{{/cleanstr}}"><span aria-hidden="true">{{alertcount}}</span><span class="visually-hidden sr-only">{{#str}}count, block_oksigeniatembiapo, {{alertcount}}{{/str}}</span></span>{{/hasalerts}}
-                </a>
-                {{#hasactions}}<span class="tembiapo-door-actions">{{#actions}}<a href="{{url}}">{{label}}</a>{{/actions}}</span>{{/hasactions}}
-            </li>
+            <li class="tbp-door{{#urgent}} is-urgent{{/urgent}}">{{> block_oksigeniatembiapo/door }}</li>
             {{/doors}}
         </ul>
     </section>

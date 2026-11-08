@@ -11,6 +11,9 @@
 - **Each door carries the logo of its product**, its plugin's own icon, in its colours; the block's neutral one when it
   has none.
 - The block knows no product, and the README is the contract any new one follows, now version 2.
+- **The art direction's design**: the urgent with a red disc and a soft veil, those of today with an amber clock, each
+  line straight to «Sort it out»; doors with the product's logo on a plate that stays light also in dark mode, the figures
+  of the state in bold, an arrow by the name, and how many alerts it has; compact doors without the shortcuts.
 
 ## 0.1.1
 
