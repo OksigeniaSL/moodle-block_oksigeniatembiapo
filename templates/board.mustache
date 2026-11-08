@@ -38,13 +38,13 @@
     <section class="tembiapo-zone tembiapo-alerts" aria-labelledby="tembiapo-alerts-{{uniqid}}">
         <h3 class="tembiapo-label" id="tembiapo-alerts-{{uniqid}}">{{#str}}alerts, block_oksigeniatembiapo{{/str}}</h3>
         <ul class="tembiapo-alert-list">
-            {{#shown}}{{> block_oksigeniatembiapo/alert }}{{/shown}}
+            {{#shown}}<li class="tembiapo-alert is-{{level}}">{{> block_oksigeniatembiapo/alert }}</li>{{/shown}}
         </ul>
         {{#hasmore}}
         <details class="tembiapo-more">
             <summary>{{morelabel}}</summary>
             <ul class="tembiapo-alert-list">
-                {{#more}}{{> block_oksigeniatembiapo/alert }}{{/more}}
+                {{#more}}<li class="tembiapo-alert is-{{level}}">{{> block_oksigeniatembiapo/alert }}</li>{{/more}}
             </ul>
         </details>
         {{/hasmore}}

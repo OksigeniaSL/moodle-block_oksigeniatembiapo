@@ -17,8 +17,8 @@
 {{!
     @template block_oksigeniatembiapo/alert
 
-    One line of «To sort out»: the service it is from, with its logo, how pressing it is, and what to do, straight to where
-    it is done.
+    The inside of one line of «To sort out» (its list item is in board.mustache): how pressing it is, what to do, straight
+    to where it is done, and the service it is from, with its logo.
 
     Example context (json):
     {
@@ -26,4 +26,4 @@
         "levellabel": "Urgent", "service": "Screens", "serviceicon": ""
     }
 }}
-<li class="tembiapo-alert is-{{level}}"><a href="{{url}}"><span class="tembiapo-badge">{{levellabel}}</span><span class="tembiapo-alert-text">{{text}}</span><span class="tembiapo-alert-service">{{#serviceicon}}<img src="{{serviceicon}}" alt="" width="16" height="16">{{/serviceicon}}{{service}}</span></a></li>
+<a href="{{url}}"><span class="tembiapo-badge">{{levellabel}}</span><span class="tembiapo-alert-text">{{text}}</span><span class="tembiapo-alert-service">{{#serviceicon}}<img src="{{serviceicon}}" alt="" width="16" height="16">{{/serviceicon}}{{service}}</span></a>
