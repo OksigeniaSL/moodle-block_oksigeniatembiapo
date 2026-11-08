@@ -57,7 +57,12 @@ class setting_services extends \admin_setting {
      */
     public function write_setting($data) {
         if (!is_array($data)) {
-            return '';
+            // The default Moodle applies on install or upgrade: written once, so the setting no longer counts as new; what
+            // the site chose before is kept.
+            if ($this->get_setting() !== null) {
+                return '';
+            }
+            return $this->config_write($this->name, '') ? '' : get_string('errorsetting', 'admin');
         }
         $places = is_array($data['place'] ?? null) ? $data['place'] : [];
         $hide = is_array($data['hide'] ?? null) ? $data['hide'] : [];

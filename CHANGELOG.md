@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- The setting of the services is written when Moodle applies its default, so it no longer shows as a new setting on every upgrade of any plugin.
+
 ## 0.2.0
 
 - **One panel, whichever services and however many.** «To sort out»: the alerts of every service in one list, the urgent

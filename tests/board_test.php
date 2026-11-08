@@ -32,10 +32,12 @@ use block_oksigeniatembiapo\local\services;
  * @covers     \block_oksigeniatembiapo\local\board
  * @covers     \block_oksigeniatembiapo\local\placement
  * @covers     \block_oksigeniatembiapo\local\services
+ * @covers     \block_oksigeniatembiapo\admin\setting_services
  */
 #[\PHPUnit\Framework\Attributes\CoversClass(board::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(placement::class)]
 #[\PHPUnit\Framework\Attributes\CoversClass(services::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_oksigeniatembiapo\admin\setting_services::class)]
 final class board_test extends \advanced_testcase {
     /**
      * Pretend services: n plugins with one door each, the first two with alerts.
@@ -146,6 +148,24 @@ final class board_test extends \advanced_testcase {
         }
         $this->assertStringContainsString('generic', board::icon('local_nothingthatexists'));
         $this->assertStringContainsString('qtype_truefalse/1/icon', board::icon('qtype_truefalse'));
+    }
+
+    /**
+     * The setting of the services is written when Moodle applies its default, so it never comes back as a new setting;
+     * what the site chose is kept.
+     */
+    public function test_setting_saved(): void {
+        global $CFG;
+        require_once($CFG->libdir . '/adminlib.php');
+        $this->resetAfterTest();
+        $setting = new \block_oksigeniatembiapo\admin\setting_services();
+        unset_config('services', 'block_oksigeniatembiapo');
+        $this->assertNull($setting->get_setting());
+        $this->assertSame('', $setting->write_setting(''));
+        $this->assertSame('', $setting->get_setting());
+        services::save(['local_b'], []);
+        $this->assertSame('', $setting->write_setting(''));
+        $this->assertSame(['local_b'], services::settings()['order']);
     }
 
     /**
