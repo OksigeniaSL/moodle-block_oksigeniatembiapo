@@ -106,6 +106,22 @@ final class board_test extends \advanced_testcase {
         $this->assertTrue($board['hasmore']);
         $this->assertSame(1, $board['morecount']);
         $this->assertSame(get_string('more', 'block_oksigeniatembiapo', 1), $board['morelabel']);
+        $this->assertSame('8.5', $board['tagwidth']);
+    }
+
+    /**
+     * The column of the service's name: the design's width for short names, wider for a long one, and a ceiling past
+     * which the name wraps.
+     */
+    public function test_tag_width(): void {
+        $this->assertSame('8.5', board::tag_width(0));
+        $this->assertSame('8.5', board::tag_width(10));
+        $this->assertSame('10', board::tag_width(16));
+        $this->assertSame('10.5', board::tag_width(17));
+        $this->assertSame('13', board::tag_width(40));
+        $board = board::build(['local_h' => [['title' => 'Horas de soporte', 'url' => 'https://school.example/h',
+            'alerts' => [['text' => 'Una intervención por aprobar', 'level' => 'today']]]]]);
+        $this->assertSame('10', $board['tagwidth']);
     }
 
     /**

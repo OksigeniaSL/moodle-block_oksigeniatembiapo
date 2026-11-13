@@ -42,6 +42,9 @@ class board {
     /** @var int The alerts in sight; the rest, behind «and N more». */
     const SHOWN = 5;
 
+    /** @var float[] The column of the service's name in «To sort out», in rem: at least, at most, and per letter. */
+    const TAG = [8.5, 13, .5];
+
     /** @var int More doors than this, and they go compact. */
     const COMPACT_AFTER = 8;
 
@@ -153,6 +156,10 @@ class board {
             return $alert;
         }, $alerts);
         $more = array_slice($alerts, self::SHOWN);
+        $longest = 0;
+        foreach ($alerts as $alert) {
+            $longest = max($longest, \core_text::strlen($alert['service']));
+        }
         $count = count($doors);
         if ($count <= 1) {
             $layout = 'one';
@@ -166,6 +173,7 @@ class board {
         return [
             'alerts' => $alerts,
             'hasalerts' => (bool) $alerts,
+            'tagwidth' => self::tag_width($longest),
             'shown' => array_slice($alerts, 0, self::SHOWN),
             'more' => $more,
             'hasmore' => (bool) $more,
@@ -231,6 +239,20 @@ class board {
             'hasactions' => (bool) $actions,
             'initial' => \core_text::strtoupper(\core_text::substr($title, 0, 1)),
         ];
+    }
+
+    /**
+     * How wide the column of the service's name is, so the longest in the list is read whole: its letters roughly
+     * measured, plus the logo and the gap; never narrower than the design's column, and past the widest it allows the
+     * name wraps to a second line instead of being cut.
+     *
+     * @param int $letters The letters of the longest name
+     * @return string The width in rem, with a dot whatever the language
+     */
+    public static function tag_width(int $letters): string {
+        [$least, $most, $each] = self::TAG;
+        $width = min($most, max($least, 2 + $letters * $each));
+        return rtrim(rtrim(sprintf('%.2F', $width), '0'), '.');
     }
 
     /**

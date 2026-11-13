@@ -29,6 +29,7 @@
 
     Context variables required for this template:
     * hasalerts - whether there is anything to sort out; without it, that part does not show
+    * tagwidth - the width of the column of the service's name, in rem, so the longest is read whole
     * shown - the first five alerts, the urgent first (see block_oksigeniatembiapo/alert)
     * more, hasmore, morelabel - the rest, behind «and N more»
     * doors - one per service, in the site's order (see block_oksigeniatembiapo/door)
@@ -37,7 +38,7 @@
 
     Example context (json):
     {
-        "hasalerts": true,
+        "hasalerts": true, "tagwidth": "8.5",
         "shown": [
             {"text": "4 pupils without a menu for tomorrow; it closes at 10:30", "url": "#", "level": "urgent",
                 "urgent": true, "levellabel": "Urgent", "service": "Canteen", "servicekey": "local_example",
@@ -68,7 +69,7 @@
 }}
 <div class="tbp tbp-{{layout}}">
     {{#hasalerts}}
-    <section class="tbp-zone tbp-todo" aria-labelledby="tbp-{{uniqid}}-todo">
+    <section class="tbp-zone tbp-todo" aria-labelledby="tbp-{{uniqid}}-todo" style="--tbp-tag: {{tagwidth}}rem">
         <h4 class="tbp-heading" id="tbp-{{uniqid}}-todo">{{#str}}alerts, block_oksigeniatembiapo{{/str}}</h4>
         <ul class="tbp-todo-list">
             {{#shown}}

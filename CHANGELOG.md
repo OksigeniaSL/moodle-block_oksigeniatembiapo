@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2
+
+- The name of each service in «To sort out» is read whole also on a wide screen: its column is as wide as the longest name
+  in the list, and past the widest it allows the name wraps to a second line instead of being cut.
+
 ## 0.2.1
 
 - The setting of the services is written when Moodle applies its default, so it no longer shows as a new setting on every upgrade of any plugin.

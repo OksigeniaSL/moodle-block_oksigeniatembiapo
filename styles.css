@@ -141,7 +141,7 @@
 .block_oksigeniatembiapo .tbp-todo-link {
     position: relative;
     display: grid;
-    grid-template-columns: 1.25rem 8.5rem minmax(0, 1fr) auto;
+    grid-template-columns: 1.25rem var(--tbp-tag, 8.5rem) minmax(0, 1fr) auto;
     grid-template-areas: "mark tag text go";
     align-items: center;
     gap: .25rem .75rem;
@@ -235,11 +235,10 @@
     line-height: 1.2;
 }
 
+/* The name whole: the column is as wide as the longest in the list, and past the widest it wraps rather than cut. */
 .block_oksigeniatembiapo .tbp-tag-name {
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: break-word;
 }
 
 .block_oksigeniatembiapo .tbp-todo-text {
@@ -643,7 +642,7 @@
     }
 
     .block_oksigeniatembiapo .tbp-todo-link {
-        grid-template-columns: 1.25rem 8rem minmax(0, 1fr) auto;
+        grid-template-columns: 1.25rem min(var(--tbp-tag, 8rem), 10rem) minmax(0, 1fr) auto;
     }
 
     .block_oksigeniatembiapo .tbp-todo-go-label {
