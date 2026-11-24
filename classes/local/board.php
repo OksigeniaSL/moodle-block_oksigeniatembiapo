@@ -25,6 +25,9 @@ namespace block_oksigeniatembiapo\local;
  * array`, that returns its doors (the contract, in README.md); its logo is its own icon, `pix/icon`. What a plugin returns
  * that does not fit is left out, fields it does not know are ignored, and a plugin that fails never breaks the dashboard.
  *
+ * Nothing and not knowing are not the same: a service that fails keeps the doors the person had the last time it answered,
+ * which say since when it does not answer, and «To sort out» has a line of it, so nobody reads it as nothing waiting.
+ *
  * @package    block_oksigeniatembiapo
  * @copyright  2026 Oksigenia SL <dev@oksigenia.cc>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,10 +39,13 @@ class board {
     /** @var int The shortcuts of a door, at most. */
     const ACTIONS = 2;
 
-    /** @var string[] The levels of an alert, the most pressing first. */
+    /** @var string[] The levels of an alert a service can give, the most pressing first. */
     const LEVELS = ['urgent', 'today'];
 
-    /** @var int The alerts in sight; the rest, behind «and N more». */
+    /** @var string[] The order of the list: a service that did not answer, after the urgent of those that did. */
+    const ORDER = ['urgent', 'unknown', 'today'];
+
+    /** @var int The alerts in sight; the rest, behind «and N more». A service that did not answer is always in sight. */
     const SHOWN = 5;
 
     /** @var float[] The column of the service's name in «To sort out», in rem: at least, at most, and per letter. */
@@ -74,28 +80,68 @@ class board {
      * @return array the context of the template
      */
     public static function collect(int $userid): array {
-        $settings = services::settings();
-        $raw = [];
-        foreach (self::services() as $component => $function) {
-            if (in_array($component, $settings['hidden'], true)) {
+        $asked = self::ask($userid);
+        return self::build($asked['raw'], services::settings()['order'], [self::class, 'icon'], $asked['silent']);
+    }
+
+    /**
+     * Asks every service the site has not hidden for the doors of a person, and keeps apart those that did not answer: the
+     * ones that throw, and the ones whose answer has nothing that fits. Both go to build().
+     *
+     * @param int $userid
+     * @param string[] $skip more services to leave out, by component (an app with one of them turned off)
+     * @param callable[]|null $services component => its function; those of the site when null
+     * @return array raw (component => its doors) and silent (component => ['doors' => the ones the person had, 'since' => when
+     *     it last answered them]); a service the person never had a door of is in neither
+     */
+    public static function ask(int $userid, array $skip = [], ?array $services = null): array {
+        $skip = array_merge(services::settings()['hidden'], $skip);
+        $now = time();
+        $out = ['raw' => [], 'silent' => []];
+        foreach ($services ?? self::services() as $component => $function) {
+            if (in_array($component, $skip, true)) {
                 continue;
             }
             $start = microtime(true);
+            $problem = null;
+            $doors = null;
+            $fit = [];
             try {
-                $doors = $function($userid);
+                $doors = call_user_func($function, $userid);
+                $fit = is_array($doors) ? self::fitting($component, $doors) : [];
+                if (!is_array($doors) || ($doors && !$fit)) {
+                    $problem = 'its answer has no door that fits the contract';
+                }
             } catch (\Throwable $e) {
-                debugging('«Your work», ' . $component . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                $problem = get_class($e) . ': ' . $e->getMessage();
+            }
+            if ($problem !== null) {
+                debugging('«Your work», ' . $component . ': ' . $problem, DEBUG_DEVELOPER);
+                $kept = memory::recall($userid, $component);
+                if ($kept) {
+                    $out['silent'][$component] = $kept;
+                }
                 continue;
             }
             $took = (int) round((microtime(true) - $start) * 1000);
             if ($took > self::SLOW) {
                 debugging('«Your work», ' . $component . ' took ' . $took . ' ms', DEBUG_DEVELOPER);
             }
-            if (is_array($doors)) {
-                $raw[$component] = $doors;
-            }
+            $out['raw'][$component] = $doors;
+            memory::keep($userid, $component, $fit, $now);
         }
-        return self::build($raw, $settings['order'], [self::class, 'icon']);
+        return $out;
+    }
+
+    /**
+     * The doors of an answer that fit the contract.
+     *
+     * @param string $component
+     * @param array $doors
+     * @return array[]
+     */
+    protected static function fitting(string $component, array $doors): array {
+        return array_values(array_filter(array_map(fn($door) => self::door($component, $door), $doors)));
     }
 
     /**
@@ -104,9 +150,10 @@ class board {
      * @param array $raw component => its doors
      * @param string[] $order the components in the order the site chose; the rest after them, by title
      * @param callable|null $icons component => the address of its logo; none when null
+     * @param array $silent component => what ask() gives of the ones that did not answer
      * @return array the context of the template
      */
-    public static function build(array $raw, array $order = [], ?callable $icons = null): array {
+    public static function build(array $raw, array $order = [], ?callable $icons = null, array $silent = []): array {
         $doors = [];
         foreach ($raw as $component => $list) {
             $component = (string) $component;
@@ -118,6 +165,23 @@ class board {
                 $door = self::door($component, $door);
                 if ($door) {
                     $door['icon'] = $icon;
+                    $door['silent'] = false;
+                    $doors[] = $door;
+                }
+            }
+        }
+        foreach ($silent as $component => $kept) {
+            $component = (string) $component;
+            $icon = $icons ? (string) call_user_func($icons, $component) : '';
+            $since = self::since((int) ($kept['since'] ?? 0));
+            foreach (is_array($kept['doors'] ?? null) ? $kept['doors'] : [] as $door) {
+                $door = self::door($component, $door);
+                if ($door) {
+                    $door['icon'] = $icon;
+                    $door['silent'] = true;
+                    $door['status'] = $since;
+                    $door['alerts'] = [['text' => get_string('silent_alert', 'block_oksigeniatembiapo', $since),
+                        'url' => $door['url'], 'level' => 'unknown']];
                     $doors[] = $door;
                 }
             }
@@ -139,23 +203,33 @@ class board {
                 $alerts[] = $alert + ['service' => $door['title'], 'servicekey' => $door['key'], 'serviceicon' => $door['icon'],
                     'place' => $place, 'seq' => count($alerts)];
             }
-            $door['alertcount'] = count($door['alerts']);
+            // Of one that did not answer, its line is not a count: how many it has is not known.
+            $door['alertcount'] = $door['silent'] ? 0 : count($door['alerts']);
             $door['hasalerts'] = $door['alertcount'] > 0;
             $door['urgent'] = $urgent;
             unset($door['alerts']);
         }
         unset($door);
         usort($alerts, function ($a, $b) {
-            return [array_search($a['level'], self::LEVELS, true), $a['due'] ?? PHP_INT_MAX, $a['place'], $a['seq']] <=>
-                [array_search($b['level'], self::LEVELS, true), $b['due'] ?? PHP_INT_MAX, $b['place'], $b['seq']];
+            return [array_search($a['level'], self::ORDER, true), $a['due'] ?? PHP_INT_MAX, $a['place'], $a['seq']] <=>
+                [array_search($b['level'], self::ORDER, true), $b['due'] ?? PHP_INT_MAX, $b['place'], $b['seq']];
         });
         $alerts = array_map(function ($alert) {
             unset($alert['place'], $alert['seq']);
             $alert['urgent'] = $alert['level'] === 'urgent';
+            $alert['unknown'] = $alert['level'] === 'unknown';
             $alert['levellabel'] = get_string('level_' . $alert['level'], 'block_oksigeniatembiapo');
             return $alert;
         }, $alerts);
-        $more = array_slice($alerts, self::SHOWN);
+        $shown = [];
+        $more = [];
+        foreach ($alerts as $place => $alert) {
+            if ($place < self::SHOWN || $alert['unknown']) {
+                $shown[] = $alert;
+            } else {
+                $more[] = $alert;
+            }
+        }
         $longest = 0;
         foreach ($alerts as $alert) {
             $longest = max($longest, \core_text::strlen($alert['service']));
@@ -174,7 +248,7 @@ class board {
             'alerts' => $alerts,
             'hasalerts' => (bool) $alerts,
             'tagwidth' => self::tag_width($longest),
-            'shown' => array_slice($alerts, 0, self::SHOWN),
+            'shown' => $shown,
             'more' => $more,
             'hasmore' => (bool) $more,
             'morecount' => count($more),
@@ -239,6 +313,21 @@ class board {
             'hasactions' => (bool) $actions,
             'initial' => \core_text::strtoupper(\core_text::substr($title, 0, 1)),
         ];
+    }
+
+    /**
+     * Since when a service does not answer, as a person says it: a time today, or a day and a time.
+     *
+     * @param int $time when it last answered
+     * @return string
+     */
+    protected static function since(int $time): string {
+        $hour = userdate($time, get_string('strftimetime', 'langconfig'));
+        if (userdate($time, '%Y%m%d') === userdate(time(), '%Y%m%d')) {
+            return get_string('silent_today', 'block_oksigeniatembiapo', $hour);
+        }
+        $day = userdate($time, get_string('strftimedateshort', 'langconfig'));
+        return get_string('silent_day', 'block_oksigeniatembiapo', (object) ['day' => $day, 'time' => $hour]);
     }
 
     /**

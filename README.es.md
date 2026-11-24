@@ -13,7 +13,10 @@ todas iguales y con el logo de su producto. Quien no lleva nada no ve nada: el b
 - Al instalarse se pone arriba del área personal de serie y de las que cada uno ha hecho suyas, sin tocar nada más.
 - Opcional, encendido de serie: «Mis cursos» sale de la barra para quien no tiene ningún curso, que encontraría allí
   una página vacía; vuelve en cuanto tenga uno.
-- No guarda datos personales.
+- Un servicio que falla sigue en su sitio: la puerta se queda para quien la tenía, con una interrogación y desde cuándo no
+  contesta, y «Por resolver» tiene una línea suya. Nada y no saberlo no son lo mismo.
+- Lo que guarda: de quien lleva algo, el nombre y la dirección de sus puertas y cuándo contestó cada servicio por última
+  vez, como preferencias suyas.
 
 Cómo se suma un plugin (el contrato, versión 2), con todos los campos: en el
 [README en inglés](README.md#how-a-plugin-takes-part--contract-version-2).

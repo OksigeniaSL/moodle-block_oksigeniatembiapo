@@ -19,13 +19,15 @@
 
     One door of «Your services», inside its list item: the logo of the product on its light plate, the name (the link:
     the whole door leads in), how many alerts it has (red only when one is urgent), the state with its figures and up
-    to two shortcuts, which stay links of their own above the door.
+    to two shortcuts, which stay links of their own above the door. A service that did not answer keeps its door: a question
+    mark instead of the number, and since when it does not answer instead of its state.
 
     Context variables required for this template:
     * title, url - the name of the service and where the door leads
     * icon - the address of the logo of its product (its pix/icon), or the block's neutral one
     * status - optional: one line with figures
     * hasalerts, alertcount, urgent - how many alerts it has, and whether one is urgent (always given, also as false)
+    * silent - whether the service did not answer (always given, also as false)
     * hasactions, actions - optional: up to two shortcuts, each with label and url
 
     Example context (json):
@@ -33,14 +35,14 @@
         "key": "local_example", "id": "tembiapo-local_example", "title": "Library", "url": "#",
         "status": "1,284 books · 37 on loan",
         "icon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg",
-        "alertcount": 2, "hasalerts": true, "urgent": false, "hasactions": true,
+        "alertcount": 2, "hasalerts": true, "urgent": false, "silent": false, "hasactions": true,
         "actions": [{"label": "Lend", "url": "#"}, {"label": "Return", "url": "#"}]
     }
 }}
 <div class="tbp-door-card">
     <span class="tbp-plate" aria-hidden="true"><img src="{{icon}}" alt="" width="32" height="32"></span>
-    {{#hasalerts}}<span class="tbp-count" aria-hidden="true">{{alertcount}}</span>{{/hasalerts}}
-    <a class="tbp-door-link" href="{{url}}"><span class="tbp-door-title">{{title}}</span>{{#hasalerts}}<span class="tbp-sr">, {{#str}}count, block_oksigeniatembiapo, {{alertcount}}{{/str}}</span>{{/hasalerts}}<svg class="tbp-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a>
-    {{#status}}<p class="tbp-door-status">{{status}}</p>{{/status}}
+    {{#hasalerts}}<span class="tbp-count" aria-hidden="true">{{alertcount}}</span>{{/hasalerts}}{{#silent}}<span class="tbp-count" aria-hidden="true">?</span>{{/silent}}
+    <a class="tbp-door-link" href="{{url}}"><span class="tbp-door-title">{{title}}</span>{{#hasalerts}}<span class="tbp-sr">, {{#str}}count, block_oksigeniatembiapo, {{alertcount}}{{/str}}</span>{{/hasalerts}}{{#silent}}<span class="tbp-sr">, {{#str}}silent_count, block_oksigeniatembiapo{{/str}}</span>{{/silent}}<svg class="tbp-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a>
+    {{#status}}<p class="tbp-door-status{{#silent}} tbp-done{{/silent}}">{{status}}</p>{{/status}}
     {{#hasactions}}<p class="tbp-door-actions">{{#actions}}<a class="tbp-door-action" href="{{url}}">{{label}}</a>{{/actions}}</p>{{/hasactions}}
 </div>

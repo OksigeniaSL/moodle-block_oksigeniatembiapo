@@ -15,7 +15,10 @@ size. Whoever runs nothing sees nothing: the block does not show.
 - Settings: the order of the services and the ones to hide (the list fills itself with what is installed; one that
   arrives later goes at the end), and «My courses» out of the main bar for whoever is enrolled in no course (on by
   default; it comes back as soon as they have one).
-- It stores no personal data.
+- A service that fails keeps its place: the door stays for whoever had it, with a question mark and since when it does not
+  answer, and «To sort out» has a line of it. Nothing and not knowing are never the same.
+- What it stores: of whoever runs something, the name and the address of their doors and when each service last answered,
+  as preferences of theirs.
 
 ## The panel
 
@@ -24,6 +27,9 @@ size. Whoever runs nothing sees nothing: the block does not show.
   the rest behind «and N more».
 - **Your services**: one door per service, with its logo, its name, a line of its state and how many alerts it has (red
   if one is urgent); its shortcuts below. An alert is never repeated as text in its door.
+- **A service that does not answer** (it throws, or nothing of its answer fits) keeps the doors the person had the last
+  time it did, with its logo: since when it does not answer instead of its state, a question mark instead of the number.
+  Its line in «To sort out» goes after the urgent and is always in sight. Whoever had no door there sees nothing of it.
 - **A fixed order**, never the one the plugins answer in: the one the site chose, and the rest by name.
 - **The grid fits the number**: one wide door; two to four in a row; five to eight, rows of four; more, compact doors.
   Narrower screens, two per row and then one.
@@ -77,8 +83,10 @@ The rules, the same for every plugin:
 - **Generic texts**, by what the permission lets the person do, without the name of any centre.
 - **Plain text** in every field: the block takes out any markup. Dates and figures already written for the person.
 - **Tolerant both ways.** The block ignores the fields it does not know and copes with the optional ones missing; a door
-  without a title or an address is left out; a function that throws is left out and logged for developers, and the other
-  services show the same.
+  without a title or an address is left out, and the other services show the same whatever one does.
+- **Let it throw.** `[]` means «this person runs nothing here», never «I could not find out». A function that fails lets its
+  exception go: the block catches it, notes it for developers and shows the door as not answering. A function that catches
+  it and returns `[]` makes the door vanish, and whoever runs the service reads that as nothing waiting.
 
 ### Trying it
 
@@ -90,6 +98,10 @@ $this->assertTrue($board['hasdoors']);
 ```
 
 On a site, the block's settings list every plugin that takes part.
+
+Another plugin that shows the same panel somewhere else (an app) asks the block, and gets the services that did not answer
+too: `$asked = board::ask($userid, $skip)`, then `board::build($asked['raw'], $order, $icons, $asked['silent'])`. Their
+doors have `silent`, and their alerts the level `unknown`, which no plugin gives.
 
 ### Versions of the contract
 

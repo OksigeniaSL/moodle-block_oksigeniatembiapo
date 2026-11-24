@@ -6,10 +6,10 @@
  *
  *   .tbp.tbp-one | .tbp-row | .tbp-grid | .tbp-compact
  *     .tbp-todo                               «To sort out» (only when there is something)
- *       .tbp-todo-item.is-urgent | .is-today  > a.tbp-todo-link: .tbp-mark, .tbp-tag, .tbp-todo-text, .tbp-todo-go
+ *       .tbp-todo-item.is-urgent | .is-unknown | .is-today > a.tbp-todo-link: .tbp-mark, .tbp-tag, .tbp-todo-text, .tbp-todo-go
  *       details.tbp-more                      «and N more»
  *     .tbp-services
- *       ul.tbp-doors.tbp-cols-1…4             > li.tbp-door[.is-urgent] > .tbp-door-card
+ *       ul.tbp-doors.tbp-cols-1…4             > li.tbp-door[.is-urgent | .is-silent] > .tbp-door-card
  *         .tbp-plate, .tbp-count, a.tbp-door-link (the whole door), .tbp-door-status, .tbp-door-actions
  *
  * The logos keep the colours of their brands, so they sit on a plate that is always light, in the light theme and in
@@ -40,6 +40,7 @@
     --tbp-plate-ring: rgba(16, 24, 40, .1);
     --tbp-count: var(--bs-secondary-bg, #e9ecef);
     --tbp-count-ink: var(--bs-body-color, #1d2125);
+    --tbp-silent-ink: var(--bs-body-bg, #fff);
     --tbp-radius: .75rem;
     --tbp-gap: .75rem;
     display: grid;
@@ -222,6 +223,27 @@
     stroke-linejoin: round;
 }
 
+/* A service that did not answer: a question in a broken ring, in the ink of the text. */
+.block_oksigeniatembiapo .tbp-mark-unknown circle {
+    fill: none;
+    stroke: var(--tbp-ink);
+    stroke-width: 1.5;
+    stroke-dasharray: 3.2 1.98;
+}
+
+.block_oksigeniatembiapo .tbp-mark-unknown path {
+    fill: none;
+    stroke: var(--tbp-ink);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.block_oksigeniatembiapo .tbp-mark-unknown .tbp-mark-point {
+    fill: var(--tbp-ink);
+    stroke: none;
+}
+
 /* The service, with the logo of its product: a short label in a column of its own, so the texts start together. */
 .block_oksigeniatembiapo .tbp-tag {
     grid-area: tag;
@@ -250,6 +272,10 @@
 
 .block_oksigeniatembiapo .is-urgent .tbp-todo-text {
     font-weight: 700;
+}
+
+.block_oksigeniatembiapo .is-unknown .tbp-todo-text {
+    font-weight: 600;
 }
 
 .block_oksigeniatembiapo .tbp-todo-go {
@@ -417,6 +443,17 @@
     color: #fff;
 }
 
+/* A service that did not answer keeps its door: a broken outline, a question mark and since when, in the ink of the text. */
+.block_oksigeniatembiapo .is-silent .tbp-door-card {
+    border-color: var(--tbp-muted);
+    border-style: dashed;
+}
+
+.block_oksigeniatembiapo .is-silent .tbp-count {
+    background: var(--tbp-ink);
+    color: var(--tbp-silent-ink);
+}
+
 /* The name is the link, and its ::after covers the whole door; the shortcuts stay above it. */
 .block_oksigeniatembiapo .tbp-door-link {
     grid-area: title;
@@ -477,6 +514,12 @@
     line-height: 1.35;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+}
+
+.block_oksigeniatembiapo .is-silent .tbp-door-status {
+    color: var(--tbp-ink);
+    font-weight: 600;
+    -webkit-line-clamp: 3;
 }
 
 .block_oksigeniatembiapo .tbp-fig {
@@ -608,6 +651,10 @@
     font-size: .8125rem;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.block_oksigeniatembiapo .tbp-compact .is-silent .tbp-door-status {
+    white-space: normal;
 }
 
 .block_oksigeniatembiapo .tbp-compact .tbp-door-actions,

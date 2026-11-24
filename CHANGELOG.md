@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+- **A service that fails no longer vanishes.** Its doors stay for whoever had them, with their logo, saying since when the
+  service does not answer, with a question mark instead of the number of alerts, and with a line in «To sort out», always
+  in sight: nothing waiting and not knowing are not the same. The block keeps, of whoever runs something, the name and the
+  address of their doors and when each service last answered, as preferences of theirs.
+- The contract: a function that fails lets its exception go instead of returning `[]`. `board::ask()` gives the services
+  that did not answer, for an app that shows the same panel.
+
 ## 0.2.2
 
 - The name of each service in «To sort out» is read whole also on a wide screen: its column is as wide as the longest name

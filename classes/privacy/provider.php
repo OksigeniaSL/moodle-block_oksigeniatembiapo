@@ -16,20 +16,48 @@
 
 namespace block_oksigeniatembiapo\privacy;
 
+use block_oksigeniatembiapo\local\memory;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\writer;
+
 /**
- * «Your work» keeps nothing of anybody: it shows what other plugins say.
+ * «Your work» keeps, of whoever runs something, the doors they had the last time each service answered, as preferences of
+ * theirs; Moodle deletes them with the person.
  *
  * @package    block_oksigeniatembiapo
  * @copyright  2026 Oksigenia SL <dev@oksigenia.cc>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\null_provider {
+class provider implements
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\user_preference_provider {
     /**
-     * Why nothing is kept.
+     * What is kept.
      *
-     * @return string
+     * @param collection $collection
+     * @return collection
      */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+    public static function get_metadata(collection $collection): collection {
+        $collection->add_user_preference(memory::PREFIX . '*', 'privacy:metadata:preference:door');
+        return $collection;
+    }
+
+    /**
+     * The preferences of a person.
+     *
+     * @param int $userid
+     * @return void
+     */
+    public static function export_user_preferences(int $userid) {
+        foreach (get_user_preferences(null, null, $userid) as $name => $value) {
+            if (strpos($name, memory::PREFIX) === 0) {
+                writer::export_user_preference(
+                    'block_oksigeniatembiapo',
+                    $name,
+                    (string) $value,
+                    get_string('privacy:metadata:preference:door', 'block_oksigeniatembiapo')
+                );
+            }
+        }
     }
 }

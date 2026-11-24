@@ -21,7 +21,8 @@
     out»: the alerts of all of them in one list, the urgent first, five in sight and the rest behind «and N more» (a
     details element, so it opens without JavaScript). Below, «Your services»: a door into each, all the same size, with
     the logo of its product on a light plate, its name, its state, how many alerts it has (red only when one is urgent)
-    and its shortcuts. The doors fit the number: one wide door, a row of two to four, rows of four, or compact doors
+    and its shortcuts. A service that does not answer keeps its door, with a question mark, and has its line in «To sort
+    out», always in sight. The doors fit the number: one wide door, a row of two to four, rows of four, or compact doors
     when there are more than eight; on narrower screens, two per row and then one (media queries only).
 
     Classes required for JS:
@@ -30,7 +31,8 @@
     Context variables required for this template:
     * hasalerts - whether there is anything to sort out; without it, that part does not show
     * tagwidth - the width of the column of the service's name, in rem, so the longest is read whole
-    * shown - the first five alerts, the urgent first (see block_oksigeniatembiapo/alert)
+    * shown - the first five alerts, the urgent first, and every service that did not answer (see
+      block_oksigeniatembiapo/alert)
     * more, hasmore, morelabel - the rest, behind «and N more»
     * doors - one per service, in the site's order (see block_oksigeniatembiapo/door)
     * layout - one, row, grid or compact
@@ -41,15 +43,15 @@
         "hasalerts": true, "tagwidth": "8.5",
         "shown": [
             {"text": "4 pupils without a menu for tomorrow; it closes at 10:30", "url": "#", "level": "urgent",
-                "urgent": true, "levellabel": "Urgent", "service": "Canteen", "servicekey": "local_example",
+                "urgent": true, "unknown": false, "levellabel": "Urgent", "service": "Canteen", "servicekey": "local_example",
                 "serviceicon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg"},
-            {"text": "3 books are due today", "url": "#", "level": "today", "urgent": false, "levellabel": "Today",
+            {"text": "3 books are due today", "url": "#", "level": "today", "urgent": false, "unknown": false, "levellabel": "Today",
                 "service": "Library", "servicekey": "local_other",
                 "serviceicon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg"}
         ],
         "hasmore": true, "morecount": 1, "morelabel": "and 1 more",
         "more": [
-            {"text": "2 holds are ready to collect", "url": "#", "level": "today", "urgent": false, "levellabel": "Today",
+            {"text": "2 holds are ready to collect", "url": "#", "level": "today", "urgent": false, "unknown": false, "levellabel": "Today",
                 "service": "Library", "servicekey": "local_other",
                 "serviceicon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg"}
         ],
@@ -58,12 +60,12 @@
             {"key": "local_example", "id": "tembiapo-local_example", "title": "Canteen", "url": "#",
                 "status": "312 menus today · 4 without a choice",
                 "icon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg", "alertcount": 1,
-                "hasalerts": true, "urgent": true, "hasactions": true,
+                "hasalerts": true, "urgent": true, "silent": false, "hasactions": true,
                 "actions": [{"label": "Today's menu", "url": "#"}, {"label": "Orders", "url": "#"}]},
             {"key": "local_other", "id": "tembiapo-local_other", "title": "Library", "url": "#",
                 "status": "1,284 books · 37 on loan",
                 "icon": "https://moodle.example/blocks/oksigeniatembiapo/pix/generic.svg", "alertcount": 2,
-                "hasalerts": true, "urgent": false, "hasactions": false, "actions": []}
+                "hasalerts": true, "urgent": false, "silent": false, "hasactions": false, "actions": []}
         ]
     }
 }}
@@ -92,7 +94,7 @@
         <h4 class="tbp-heading{{^hasalerts}} tbp-sr{{/hasalerts}}" id="tbp-{{uniqid}}-services">{{#str}}doors, block_oksigeniatembiapo{{/str}}</h4>
         <ul class="tbp-doors tbp-cols-{{cols}}">
             {{#doors}}
-            <li class="tbp-door{{#urgent}} is-urgent{{/urgent}}">{{> block_oksigeniatembiapo/door }}</li>
+            <li class="tbp-door{{#urgent}} is-urgent{{/urgent}}{{#silent}} is-silent{{/silent}}">{{> block_oksigeniatembiapo/door }}</li>
             {{/doors}}
         </ul>
     </section>
